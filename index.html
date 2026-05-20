@@ -130,14 +130,15 @@
     return;
   }
 
-  setLocalStorageUser(result);
+setLocalStorageUser(result);
 
-  if (result.profile.role === 'admin') {
-    window.location.href = '/admin/index.html';
-  } else {
-    window.location.href = '/dashboard.html';
-  }
-    });
+if (result.profile.role === 'admin') {
+  window.location.href = '/admin/index.html';
+} else {
+  window.location.href = '/dashboard.html';
+}
+});
+</script>
 
 <!-- PWA Install Banner -->
 <div id="install-pwa-banner" class="install-banner hidden">
@@ -168,8 +169,5 @@
 </div>
 
 <script type="module" src="/js/pwa.js"></script>
-</body>
-</html>
-  </script>
 </body>
 </html>
