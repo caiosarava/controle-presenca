@@ -278,6 +278,12 @@
       document.getElementById('locaisAutorizados').value = [];
     }
 
+function getRoleBadge(role) {
+  const badgeClass = role === 'admin' ? 'badge-primary' : 'badge-secondary';
+  const badgeText = role === 'admin' ? 'Admin' : 'Usuário';
+  return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+}
+
 async function carregarUsuarios() {
   const { data: locais } = await buscarLocais();
   todosLocais = locais || [];
@@ -322,14 +328,8 @@ async function carregarUsuarios() {
         </button>
       </td>
     </tr>
-  `}).join('');
+    `}).join('');
 }
-
-function getRoleBadge(role) {
-      const badgeClass = role === 'admin' ? 'badge-primary' : 'badge-secondary';
-      const badgeText = role === 'admin' ? 'Admin' : 'Usuário';
-      return `<span class="badge ${badgeClass}">${badgeText}</span>`;
-    }
 
     window.editarUsuario = async (usuarioId) => {
       const { data: usuario } = await supabase
