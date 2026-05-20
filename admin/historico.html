@@ -73,32 +73,46 @@
       </header>
 
       <div class="data-table">
-        <div class="filter-bar">
-          <select id="filtroUsuario" style="flex: 1; min-width: 200px;">
-            <option value="">Todos Usuários</option>
-          </select>
-          <select id="filtroLocal" style="flex: 1; min-width: 200px;">
-            <option value="">Todos Locais</option>
-          </select>
-          <select id="filtroPeriodo" style="width: auto;">
-            <option value="7">Últimos 7 dias</option>
-            <option value="30">Últimos 30 dias</option>
-            <option value="90">Últimos 90 dias</option>
-            <option value="todos">Todos</option>
-          </select>
-        </div>
+<div class="filter-bar">
+<select id="filtroUsuario" style="flex: 1; min-width: 200px;">
+<option value="">Todos Usuários</option>
+</select>
+<select id="filtroLocal" style="flex: 1; min-width: 200px;">
+<option value="">Todos Locais</option>
+</select>
+<select id="filtroTipo" style="width: auto;">
+<option value="todos">Todos Tipos</option>
+<option value="entrada" selected>Apenas Entradas</option>
+<option value="saida">Apenas Saídas</option>
+</select>
+<select id="filtroPeriodo" style="width: auto;">
+<option value="7">Últimos 7 dias</option>
+<option value="30">Últimos 30 dias</option>
+<option value="90">Últimos 90 dias</option>
+<option value="todos">Todos</option>
+</select>
+</div>
 
         <div class="data-table-container">
           <table>
-            <thead>
-              <tr>
-                <th>Usuário</th>
-                <th>Local</th>
-                <th>Tipo</th>
-                <th>Data/Hora</th>
-                <th>Tempo Permanência</th>
-              </tr>
-            </thead>
+<thead>
+<tr>
+<th>Usuário</th>
+<th>Local</th>
+<th>Tipo</th>
+<th>Data/Hora</th>
+<th>Tempo Permanência</th>
+</tr>
+</thead>
+<tbody id="tabelaRegistros">
+<tr>
+<td colspan="5" class="text-center">
+<div class="loading-spinner">
+<span class="loading"></span>
+</div>
+</td>
+</tr>
+</tbody>
             <tbody id="tabelaRegistros">
               <tr>
                 <td colspan="5" class="text-center">
@@ -133,17 +147,19 @@
       window.location.href = '/index.html';
     }
 
-    const tabelaRegistros = document.getElementById('tabelaRegistros');
-    const emptyState = document.getElementById('emptyState');
-    const filtroUsuario = document.getElementById('filtroUsuario');
-    const filtroLocal = document.getElementById('filtroLocal');
-    const filtroPeriodo = document.getElementById('filtroPeriodo');
-    const btnExportar = document.getElementById('btnExportar');
-    const logoutBtn = document.getElementById('logoutBtn');
+const tabelaRegistros = document.getElementById('tabelaRegistros');
+const emptyState = document.getElementById('emptyState');
+const filtroUsuario = document.getElementById('filtroUsuario');
+const filtroLocal = document.getElementById('filtroLocal');
+const filtroTipo = document.getElementById('filtroTipo');
+const filtroPeriodo = document.getElementById('filtroPeriodo');
+const btnExportar = document.getElementById('btnExportar');
+const logoutBtn = document.getElementById('logoutBtn');
 
-    let todosUsuarios = [];
-    let todosLocais = [];
-    let todosRegistros = [];
+let todosUsuarios = [];
+let todosLocais = [];
+let todosRegistros = [];
+let registrosComSaida = new Map(); // Map para armazenar horário de saída por entrada
 
     logoutBtn?.addEventListener('click', async (e) => {
       e.preventDefault();
@@ -152,9 +168,10 @@
       window.location.href = '/index.html';
     });
 
-    filtroUsuario?.addEventListener('change', carregarRegistros);
-    filtroLocal?.addEventListener('change', carregarRegistros);
-    filtroPeriodo?.addEventListener('change', carregarRegistros);
+filtroUsuario?.addEventListener('change', carregarRegistros);
+filtroLocal?.addEventListener('change', carregarRegistros);
+filtroTipo?.addEventListener('change', carregarRegistros);
+filtroPeriodo?.addEventListener('change', carregarRegistros);
 
     btnExportar?.addEventListener('click', () => {
       const registrosFiltrados = getRegistrosFiltrados();
@@ -179,70 +196,162 @@
         todosLocais.map(l => `<option value="${l.id}">${l.nome}</option>`).join('');
     }
 
-    async function carregarRegistros() {
-      const { data, error } = await supabase
-        .from('registros')
-        .select(`
-          *,
-          locais (nome),
-          users (nome, email)
-        `)
-        .order('data_hora', { ascending: false });
+async function carregarRegistros() {
+  // Buscar todos os registros (entrada e saída) para calcular tempo de permanência
+  const { data, error } = await supabase
+    .from('registros')
+    .select(`
+    *,
+    locais (nome),
+    users (nome, email)
+  `)
+    .order('data_hora', { ascending: false });
 
-      if (error) {
-        console.error('Erro:', error);
-        return;
+  if (error) {
+    console.error('Erro:', error);
+    return;
+  }
+
+  todosRegistros = data || [];
+  
+  // Calcular tempo de permanência para cada entrada
+  calcularTemposPermanencia(todosRegistros);
+  
+  exibirRegistros(getRegistrosFiltrados());
+}
+
+function calcularTemposPermanencia(registros) {
+  registrosComSaida.clear();
+  
+  // Agrupar registros por usuário e local
+  const registrosPorUsuarioLocal = {};
+  
+  registros.forEach(reg => {
+    const key = `${reg.user_id}-${reg.local_id}`;
+    if (!registrosPorUsuarioLocal[key]) {
+      registrosPorUsuarioLocal[key] = [];
+    }
+    registrosPorUsuarioLocal[key].push(reg);
+  });
+  
+  // Para cada grupo, ordenar por data e parear entrada/saída
+  Object.values(registrosPorUsuarioLocal).forEach(grupo => {
+    // Ordenar por data (crescente)
+    grupo.sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
+    
+    let ultimaEntrada = null;
+    
+    grupo.forEach(reg => {
+      if (reg.tipo === 'entrada') {
+        ultimaEntrada = reg;
+      } else if (reg.tipo === 'saida' && ultimaEntrada) {
+        // Calcular tempo de permanência
+        const entrada = new Date(ultimaEntrada.data_hora);
+        const saida = new Date(reg.data_hora);
+        const diffMs = saida - entrada;
+        
+        if (diffMs > 0) {
+          const horas = Math.floor(diffMs / (1000 * 60 * 60));
+          const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+          ultimaEntrada.tempo_permanencia = `${horas}h ${minutos}m`;
+          ultimaEntrada.tempo_permanencia_ms = diffMs;
+        }
+        
+        ultimaEntrada = null; // Reset para próxima entrada
       }
+    });
+  });
+}
 
-      todosRegistros = data || [];
-      exibirRegistros(getRegistrosFiltrados());
+function calcularTempoPermanenciaParaEntrada(entrada, registros) {
+  // Buscar próxima saída após esta entrada
+  const saida = registros
+    .filter(r => r.user_id === entrada.user_id && 
+                 r.local_id === entrada.local_id && 
+                 r.tipo === 'saida' && 
+                 new Date(r.data_hora) > new Date(entrada.data_hora))
+    .sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora))[0];
+  
+  if (!saida) {
+    return 'Em andamento';
+  }
+  
+  const entradaMs = new Date(entrada.data_hora).getTime();
+  const saidaMs = new Date(saida.data_hora).getTime();
+  const diffMs = saidaMs - entradaMs;
+  
+  const horas = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  
+  return `${horas}h ${minutos}m`;
+}
+
+function getRegistrosFiltrados() {
+  const userId = filtroUsuario.value;
+  const localId = filtroLocal.value;
+  const tipo = filtroTipo.value;
+  const periodo = filtroPeriodo.value;
+
+  let filtrados = todosRegistros;
+
+  if (userId) {
+    filtrados = filtrados.filter(r => r.user_id === userId);
+  }
+
+  if (localId) {
+    filtrados = filtrados.filter(r => r.local_id === localId);
+  }
+
+  if (tipo && tipo !== 'todos') {
+    filtrados = filtrados.filter(r => r.tipo === tipo);
+  }
+
+  if (periodo !== 'todos') {
+    const dias = parseInt(periodo);
+    const dataLimite = new Date();
+    dataLimite.setDate(dataLimite.getDate() - dias);
+    filtrados = filtrados.filter(r => new Date(r.data_hora) >= dataLimite);
+  }
+
+  return filtrados;
+}
+
+function exibirRegistros(registros) {
+  if (!registros || registros.length === 0) {
+    tabelaRegistros.parentElement.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+  tabelaRegistros.parentElement.classList.remove('hidden');
+
+  tabelaRegistros.innerHTML = registros.map(registro => {
+    // Calcular tempo de permanência para entradas
+    let tempoPermanencia = '-';
+    if (registro.tipo === 'entrada') {
+      // Verificar se já calculamos o tempo
+      if (registro.tempo_permanencia) {
+        tempoPermanencia = registro.tempo_permanencia;
+      } else {
+        // Calcular tempo até o momento (em andamento)
+        tempoPermanencia = 'Em andamento';
+      }
+    } else {
+      // Para saídas, mostrar o tempo calculado da entrada correspondente
+      tempoPermanencia = '-';
     }
 
-    function getRegistrosFiltrados() {
-      const userId = filtroUsuario.value;
-      const localId = filtroLocal.value;
-      const periodo = filtroPeriodo.value;
-
-      let filtrados = todosRegistros;
-
-      if (userId) {
-        filtrados = filtrados.filter(r => r.user_id === userId);
-      }
-
-      if (localId) {
-        filtrados = filtrados.filter(r => r.local_id === localId);
-      }
-
-      if (periodo !== 'todos') {
-        const dias = parseInt(periodo);
-        const dataLimite = new Date();
-        dataLimite.setDate(dataLimite.getDate() - dias);
-        filtrados = filtrados.filter(r => new Date(r.data_hora) >= dataLimite);
-      }
-
-      return filtrados;
-    }
-
-    function exibirRegistros(registros) {
-      if (!registros || registros.length === 0) {
-        tabelaRegistros.parentElement.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        return;
-      }
-
-      emptyState.classList.add('hidden');
-      tabelaRegistros.parentElement.classList.remove('hidden');
-
-      tabelaRegistros.innerHTML = registros.map(registro => `
-        <tr>
-          <td>${registro.users?.nome || '-'}</td>
-          <td>${registro.locais?.nome || '-'}</td>
-          <td>${getTipoBadge(registro.tipo)}</td>
-          <td>${formatarDataHora(registro.data_hora)}</td>
-          <td>${registro.tempo_permanencia || '-'}</td>
-        </tr>
-      `).join('');
-    }
+    return `
+    <tr>
+      <td>${registro.users?.nome || '-'}</td>
+      <td>${registro.locais?.nome || '-'}</td>
+      <td>${getTipoBadge(registro.tipo)}</td>
+      <td>${formatarDataHora(registro.data_hora)}</td>
+      <td>${tempoPermanencia}</td>
+    </tr>
+  `}).join('');
+}
 
     function getTipoBadge(tipo) {
       const badgeClass = tipo === 'entrada' ? 'badge-success' : 'badge-danger';
