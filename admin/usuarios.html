@@ -325,6 +325,36 @@ async function carregarUsuarios() {
   `}).join('');
 }
 
+  if (!todosUsuarios || todosUsuarios.length === 0) {
+    tabelaUsuarios.parentElement.classList.add('hidden');
+    emptyState.classList.remove('hidden');
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+  tabelaUsuarios.parentElement.classList.remove('hidden');
+
+  tabelaUsuarios.innerHTML = todosUsuarios.map(usuario => {
+    const locaisUsuario = locais.filter(l => usuario.locais_autorizados?.includes(l.id));
+    const locaisNomes = locaisUsuario.map(l => l.nome).join(', ') || 'Nenhum';
+
+    return `
+    <tr>
+      <td>${usuario.nome || '-'}</td>
+      <td>${usuario.email || '-'}</td>
+      <td>${getRoleBadge(usuario.role)}</td>
+      <td>${locaisNomes}</td>
+      <td>
+        <button class="btn-icon primary" onclick="editarUsuario('${usuario.id}')">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
+      </td>
+    </tr>
+  `}).join('');
+}
+
     // Combinar auth users com perfis
     todosUsuarios = authUsers.map(au => {
       const perfil = perfisMap.get(au.id) || {};
