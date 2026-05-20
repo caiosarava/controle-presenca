@@ -156,6 +156,16 @@ CREATE POLICY "users_delete_admin" ON public.users
         )
     );
 
+-- Usuários podem criar seu próprio perfil (cadastro)
+CREATE POLICY "users_insert_own" ON public.users
+    FOR INSERT
+    WITH CHECK (auth.uid() = id);
+
+-- Usuários podem atualizar seus próprios dados
+CREATE POLICY "users_update_own" ON public.users
+    FOR UPDATE
+    USING (auth.uid() = id);
+
 -- ============================================
 -- POLICIES: locais
 -- ============================================
