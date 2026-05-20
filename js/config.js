@@ -9,8 +9,8 @@
 // ===============================================
 
 // Opção 1: Variáveis de ambiente (Vercel)
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://SEU-PROJETO.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'SUA-CHAVE-ANONIMA';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://nxgvbxkgfetmjjnadhhg.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54Z3ZieGtnZmV0bWpqbmFkaGhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkyMTA5MTUsImV4cCI6MjA5NDc4NjkxNX0.t77ROt4sF92O4F2KgnoQwlPdf743CVsOW_Rg6x6_Urg';
 
 // Raio padrão em metros (100m)
 const GEO_RADIUS_DEFAULT = 100;
