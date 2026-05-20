@@ -61,14 +61,21 @@
       </nav>
     </aside>
 
-    <main class="admin-main">
-      <header class="admin-header">
-        <h2>Dashboard</h2>
-        <div class="user-info">
-          <div class="user-avatar" id="userAvatar">A</div>
-          <span class="user-name" id="userName">Admin</span>
-        </div>
-      </header>
+<main class="admin-main">
+<header class="admin-header">
+<h2>Dashboard</h2>
+<div class="header-actions">
+<button class="btn-icon primary" id="btnRefresh" title="Atualizar agora">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="refresh-icon" id="refreshIcon">
+<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+</svg>
+</button>
+</div>
+<div class="user-info">
+<div class="user-avatar" id="userAvatar">A</div>
+<span class="user-name" id="userName">Admin</span>
+</div>
+</header>
 
       <div class="stats-grid">
         <div class="stat-card">
@@ -201,20 +208,21 @@ logoutBtn?.addEventListener('click', async (e) => {
 });
 
 let pollingInterval;
+let isRefreshing = false;
 
 async function carregarDashboard() {
   await carregarEstatisticas();
   await carregarGraficos();
   await carregarUltimosRegistros();
   
-  // Configurar polling de 5 minutos
+  // Configurar polling de 1 minuto
   if (pollingInterval) {
     clearInterval(pollingInterval);
   }
   pollingInterval = setInterval(async () => {
     await carregarEstatisticas();
     await carregarUltimosRegistros();
-  }, 5 * 60 * 1000); // 5 minutos
+  }, 60 * 1000); // 1 minuto
 }
 
 async function carregarEstatisticas() {
@@ -230,6 +238,34 @@ async function carregarEstatisticas() {
     document.getElementById('presencaAtual').textContent = presenca;
   }
 }
+
+async function refreshAll() {
+  if (isRefreshing) return;
+  isRefreshing = true;
+  
+  // Adicionar spinner
+  const refreshIcon = document.getElementById('refreshIcon');
+  if (refreshIcon) {
+    refreshIcon.classList.add('spinning');
+  }
+  
+  try {
+    await carregarEstatisticas();
+    await carregarGraficos();
+    await carregarUltimosRegistros();
+  } catch (error) {
+    console.error('Erro ao atualizar dashboard:', error);
+  } finally {
+    // Remover spinner
+    if (refreshIcon) {
+      refreshIcon.classList.remove('spinning');
+    }
+    isRefreshing = false;
+  }
+}
+
+// Botão de atualizar
+document.getElementById('btnRefresh')?.addEventListener('click', refreshAll);
 
     async function carregarGraficos() {
       const dados = await buscarRegistrosPorPeriodo(7);
