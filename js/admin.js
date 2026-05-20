@@ -175,30 +175,37 @@ export async function deletarLocal(localId) {
 
 export async function buscarEstatisticas() {
   try {
-    // Usar função SQL para contar usuários (respeita RLS)
-    const { data: totalUsuariosData, error: erroUsuarios } = await supabase.rpc('get_total_usuarios');
-    const totalUsuarios = erroUsuarios ? 0 : (totalUsuariosData || 0);
+    // Contar usuários diretamente (admin pode ver todos)
+    const { count: totalUsuariosCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true });
 
-    const { data: totalLocais } = await supabase
+    // Contar locais
+    const { count: totalLocaisCount } = await supabase
       .from('locais')
       .select('*', { count: 'exact', head: true });
 
+    // Contar registros de hoje
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
-    const { data: registrosHoje } = await supabase
+    const { count: registrosHojeCount } = await supabase
       .from('registros')
       .select('*', { count: 'exact', head: true })
       .gte('data_hora', hoje.toISOString());
 
     return {
-      totalUsuarios: totalUsuarios || 0,
-      totalLocais: totalLocais || 0,
-      registrosHoje: registrosHoje || 0,
+      totalUsuarios: totalUsuariosCount || 0,
+      totalLocais: totalLocaisCount || 0,
+      registrosHoje: registrosHojeCount || 0,
     };
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error);
-    return null;
+    return {
+      totalUsuarios: 0,
+      totalLocais: 0,
+      registrosHoje: 0,
+    };
   }
 }
 
