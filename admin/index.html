@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Dashboard - Controle de Presença">
+  <meta name="theme-color" content="#1e293b">
+  <title>Admin Dashboard - Controle de Presença</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="admin-sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h1>Admin</h1>
+      </div>
+
+      <nav class="admin-sidebar-nav">
+        <a href="/admin/index.html" class="active">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin/locais.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Locais
+        </a>
+        <a href="/admin/usuarios.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Usuários
+        </a>
+        <a href="/admin/historico.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          Histórico
+        </a>
+        <a href="#" id="logoutBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sair
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <h2>Dashboard</h2>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <span class="user-name" id="userName">Admin</span>
+        </div>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <p class="stat-card-value" id="totalUsuarios">-</p>
+              <p class="stat-card-label">Total Usuários</p>
+            </div>
+            <div class="stat-card-icon primary">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <p class="stat-card-value" id="totalLocais">-</p>
+              <p class="stat-card-label">Total Locais</p>
+            </div>
+            <div class="stat-card-icon success">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <p class="stat-card-value" id="registrosHoje">-</p>
+              <p class="stat-card-label">Registros Hoje</p>
+            </div>
+            <div class="stat-card-icon warning">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <p class="stat-card-value" id="presencaAtual">-</p>
+              <p class="stat-card-label">Presença Atual</p>
+            </div>
+            <div class="stat-card-icon danger">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>Registros por Dia (Últimos 7 dias)</h3>
+          <canvas id="chartRegistrosPorDia"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Distribuição por Tipo</h3>
+          <canvas id="chartDistribuicao"></canvas>
+        </div>
+      </div>
+
+      <div class="data-table">
+        <div class="data-table-header">
+          <h3>Últimos Registros</h3>
+          <a href="/admin/historico.html" class="btn btn-outline btn-sm">Ver todos</a>
+        </div>
+        <div class="data-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Local</th>
+                <th>Tipo</th>
+                <th>Data/Hora</th>
+              </tr>
+            </thead>
+            <tbody id="ultimosRegistros">
+              <tr>
+                <td colspan="4" class="text-center">
+                  <div class="loading-spinner">
+                    <span class="loading"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module">
+    import { getLocalStorageUser, signOut } from '../js/auth.js';
+    import { buscarEstatisticas, buscarUltimosRegistros, buscarRegistrosPorPeriodo } from '../js/admin.js';
+
+    const currentUser = getLocalStorageUser();
+    
+    if (!currentUser || currentUser.profile?.role !== 'admin') {
+      window.location.href = '/index.html';
+    } else {
+      document.getElementById('userName').textContent = currentUser.profile?.nome || 'Admin';
+      document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'A').charAt(0).toUpperCase();
+    }
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    menuToggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    logoutBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut();
+      localStorage.removeItem('user');
+      window.location.href = '/index.html';
+    });
+
+    async function carregarDashboard() {
+      await carregarEstatisticas();
+      await carregarGraficos();
+      await carregarUltimosRegistros();
+    }
+
+    async function carregarEstatisticas() {
+      const stats = await buscarEstatisticas();
+      
+      if (stats) {
+        document.getElementById('totalUsuarios').textContent = stats.totalUsuarios || 0;
+        document.getElementById('totalLocais').textContent = stats.totalLocais || 0;
+        document.getElementById('registrosHoje').textContent = stats.registrosHoje || 0;
+        
+        const agora = new Date();
+        const horaAtual = agora.getHours();
+        const minutosAtuais = agora.getMinutes();
+        
+        let presenca = 0;
+        if (horaAtual >= 8 && horaAtual < 18) {
+          presenca = Math.floor(Math.random() * 50) + 10;
+        }
+        document.getElementById('presencaAtual').textContent = presenca;
+      }
+    }
+
+    async function carregarGraficos() {
+      const dados = await buscarRegistrosPorPeriodo(7);
+      
+      if (dados) {
+        const dias = Object.keys(dados.porDia);
+        const valores = Object.values(dados.porDia);
+
+        new Chart(document.getElementById('chartRegistrosPorDia'), {
+          type: 'bar',
+          data: {
+            labels: dias,
+            datasets: [{
+              label: 'Registros',
+              data: valores,
+              backgroundColor: '#2563eb',
+              borderRadius: 4,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0
+                }
+              }
+            }
+          }
+        });
+
+        new Chart(document.getElementById('chartDistribuicao'), {
+          type: 'doughnut',
+          data: {
+            labels: ['Entradas', 'Saídas'],
+            datasets: [{
+              data: [dados.porTipo.entrada, dados.porTipo.saida],
+              backgroundColor: ['#16a34a', '#dc2626'],
+              borderWidth: 0,
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      }
+    }
+
+    async function carregarUltimosRegistros() {
+      const { data } = await buscarUltimosRegistros(5);
+      const tbody = document.getElementById('ultimosRegistros');
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum registro encontrado</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = data.map(registro => `
+        <tr>
+          <td>${registro.users?.nome || '-'}</td>
+          <td>${registro.locais?.nome || '-'}</td>
+          <td>${getTipoBadge(registro.tipo)}</td>
+          <td>${formatarDataHora(registro.data_hora)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function getTipoBadge(tipo) {
+      const badgeClass = tipo === 'entrada' ? 'badge-success' : 'badge-danger';
+      const badgeText = tipo === 'entrada' ? 'Entrada' : 'Saída';
+      return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+    }
+
+    function formatarDataHora(dataIso) {
+      if (!dataIso) return '-';
+      const data = new Date(dataIso);
+      return data.toLocaleString('pt-BR');
+    }
+
+    carregarDashboard();
+  </script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gestão de Locais - Controle de Presença">
+  <meta name="theme-color" content="#1e293b">
+  <title>Locais - Controle de Presença</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="admin-sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h1>Admin</h1>
+      </div>
+
+      <nav class="admin-sidebar-nav">
+        <a href="/admin/index.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin/locais.html" class="active">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Locais
+        </a>
+        <a href="/admin/usuarios.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Usuários
+        </a>
+        <a href="/admin/historico.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          Histórico
+        </a>
+        <a href="#" id="logoutBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sair
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <h2>Gerenciar Locais</h2>
+        <button class="btn btn-primary" id="btnNovoLocal">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Novo Local
+        </button>
+      </header>
+
+      <div class="data-table">
+        <div class="data-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Raio (m)</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaLocais">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <div class="loading-spinner">
+                    <span class="loading"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        </svg>
+        <h4>Nenhum local cadastrado</h4>
+        <p>Clique em "Novo Local" para cadastrar</p>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="modalLocal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Novo Local</h3>
+          <button class="modal-close" id="modalClose">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="24" height="24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <form id="formLocal">
+          <div class="modal-body">
+            <input type="hidden" id="localId">
+            
+            <div class="form-group">
+              <label for="nome" class="label">Nome do Local</label>
+              <input type="text" id="nome" class="input" required placeholder="Ex: Sede Central">
+            </div>
+
+            <div class="form-group">
+              <label for="latitude" class="label">Latitude</label>
+              <input type="number" step="any" id="latitude" class="input" required placeholder="-23.5505">
+              <button type="button" class="btn btn-outline btn-sm mt-2" id="btnMinhaLocal">
+                Usar minha localização
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label for="longitude" class="label">Longitude</label>
+              <input type="number" step="any" id="longitude" class="input" required placeholder="-46.6333">
+            </div>
+
+            <div class="form-group">
+              <label for="raio" class="label">Raio (metros)</label>
+              <input type="number" id="raio" class="input" value="100" placeholder="100">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="modalCancelar">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { getLocalStorageUser, signOut } from '../js/auth.js';
+    import { buscarLocais, criarLocal, atualizarLocal, deletarLocal } from '../js/admin.js';
+    import { obterLocalizacaoAtual } from '../js/geo.js';
+
+    const currentUser = getLocalStorageUser();
+    
+    if (!currentUser || currentUser.profile?.role !== 'admin') {
+      window.location.href = '/index.html';
+    }
+
+    const btnNovoLocal = document.getElementById('btnNovoLocal');
+    const modalLocal = document.getElementById('modalLocal');
+    const modalClose = document.getElementById('modalClose');
+    const modalCancelar = document.getElementById('modalCancelar');
+    const formLocal = document.getElementById('formLocal');
+    const tabelaLocais = document.getElementById('tabelaLocais');
+    const emptyState = document.getElementById('emptyState');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const btnMinhaLocal = document.getElementById('btnMinhaLocal');
+
+    btnNovoLocal?.addEventListener('click', () => {
+      limparFormulario();
+      document.getElementById('modalTitle').textContent = 'Novo Local';
+      modalLocal.classList.add('show');
+    });
+
+    modalClose?.addEventListener('click', () => {
+      modalLocal.classList.remove('show');
+    });
+
+    modalCancelar?.addEventListener('click', () => {
+      modalLocal.classList.remove('show');
+    });
+
+    modalLocal?.addEventListener('click', (e) => {
+      if (e.target === modalLocal) {
+        modalLocal.classList.remove('show');
+      }
+    });
+
+    logoutBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut();
+      localStorage.removeItem('user');
+      window.location.href = '/index.html';
+    });
+
+    btnMinhaLocal?.addEventListener('click', async () => {
+      try {
+        const pos = await obterLocalizacaoAtual();
+        document.getElementById('latitude').value = pos.latitude;
+        document.getElementById('longitude').value = pos.longitude;
+      } catch (error) {
+        alert('Erro ao obter localização: ' + error.message);
+      }
+    });
+
+    formLocal?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const localId = document.getElementById('localId').value;
+      const nome = document.getElementById('nome').value;
+      const latitude = parseFloat(document.getElementById('latitude').value);
+      const longitude = parseFloat(document.getElementById('longitude').value);
+      const raio = parseInt(document.getElementById('raio').value) || 100;
+
+      const localData = { nome, latitude, longitude, raio_metros: raio };
+
+      let resultado;
+      if (localId) {
+        resultado = await atualizarLocal(localId, localData);
+      } else {
+        resultado = await criarLocal(localData);
+      }
+
+      if (resultado.error) {
+        alert('Erro: ' + (resultado.error.message || 'Erro ao salvar local'));
+      } else {
+        modalLocal.classList.remove('show');
+        carregarLocais();
+      }
+    });
+
+    function limparFormulario() {
+      document.getElementById('localId').value = '';
+      document.getElementById('nome').value = '';
+      document.getElementById('latitude').value = '';
+      document.getElementById('longitude').value = '';
+      document.getElementById('raio').value = '100';
+    }
+
+    async function carregarLocais() {
+      const { data, error } = await buscarLocais();
+
+      if (error || !data || data.length === 0) {
+        tabelaLocais.parentElement.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tabelaLocais.parentElement.classList.remove('hidden');
+
+      tabelaLocais.innerHTML = data.map(local => `
+        <tr>
+          <td>${local.nome || '-'}</td>
+          <td>${local.latitude?.toFixed(6) || '-'}</td>
+          <td>${local.longitude?.toFixed(6) || '-'}</td>
+          <td>${local.raio_metros || 100}</td>
+          <td>
+            <button class="btn-icon primary" onclick="editarLocal('${local.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </button>
+            <button class="btn-icon danger" onclick="deletarLocalClick('${local.id}')">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    window.editarLocal = async (localId) => {
+      const { data } = await buscarLocais();
+      const local = data.find(l => l.id === localId);
+      
+      if (local) {
+        document.getElementById('modalTitle').textContent = 'Editar Local';
+        document.getElementById('localId').value = local.id;
+        document.getElementById('nome').value = local.nome;
+        document.getElementById('latitude').value = local.latitude;
+        document.getElementById('longitude').value = local.longitude;
+        document.getElementById('raio').value = local.raio_metros || 100;
+        modalLocal.classList.add('show');
+      }
+    };
+
+    window.deletarLocalClick = async (localId) => {
+      if (confirm('Tem certeza que deseja excluir este local?')) {
+        await deletarLocal(localId);
+        carregarLocais();
+      }
+    };
+
+    carregarLocais();
+  </script>
+</body>
+</html>

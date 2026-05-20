@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#gradient)"/>
+  
+  <!-- Location Pin -->
+  <path d="M50 22 C35 22 25 33 25 47 C25 65 50 82 50 82 C50 82 75 65 75 47 C75 33 65 22 50 22 Z" 
+        fill="white" opacity="0.9"/>
+  
+  <!-- Inner Circle -->
+  <circle cx="50" cy="47" r="12" fill="#2563eb"/>
+  
+  <!-- Check mark -->
+  <path d="M45 47 L48 51 L55 43" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

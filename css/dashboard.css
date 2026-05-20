@@ -1,0 +1,284 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  transition: transform 0.3s;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-header svg {
+  width: 32px;
+  height: 32px;
+  color: var(--primary);
+}
+
+.sidebar-header h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.sidebar-nav a:hover {
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.sidebar-nav a.active {
+  background: var(--primary);
+  color: white;
+}
+
+.sidebar-nav a svg {
+  width: 20px;
+  height: 20px;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 280px;
+  padding: 2rem;
+  background: var(--background);
+  min-height: 100vh;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.main-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.presence-card {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.presence-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.presence-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.presence-header p {
+  color: var(--text-secondary);
+}
+
+.location-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.location-status.inside {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.location-status.outside {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.location-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.location-status svg {
+  width: 20px;
+  height: 20px;
+}
+
+.presence-btn-container {
+  text-align: center;
+}
+
+.presence-btn {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  box-shadow: var(--shadow-md);
+}
+
+.presence-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.presence-btn:disabled {
+  cursor: not-allowed;
+  transform: none;
+}
+
+.presence-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-entrada {
+  background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+  color: white;
+}
+
+.btn-saida {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
+}
+
+.btn-disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+  color: white;
+}
+
+.location-info {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--background);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.location-info h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.location-info p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.current-status {
+  text-align: center;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--background);
+}
+
+.current-status.status-entrada {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.current-status.status-saida {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.menu-toggle {
+  display: none;
+  background: none;
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 1000;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .main-header {
+    gap: 1rem;
+  }
+
+  .presence-btn {
+    width: 160px;
+    height: 160px;
+    font-size: 1rem;
+  }
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard - Controle de Presença">
+  <meta name="theme-color" content="#2563eb">
+  <title>Dashboard - Controle de Presença</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h1>Controle de Presença</h1>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html" class="active">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Início
+        </a>
+        <a href="/historico.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Histórico
+        </a>
+        <a href="#" id="logoutBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sair
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <button class="btn-icon menu-toggle" id="menuToggle">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <h2>Início</h2>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <span class="user-name" id="userName">Carregando...</span>
+        </div>
+      </header>
+
+      <div class="presence-card card">
+        <div class="presence-header">
+          <h3 id="greeting">Olá!</h3>
+          <p>Registre sua presença</p>
+        </div>
+
+        <div id="locationStatus" class="location-status pending">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="locationStatusText">Verificando localização...</span>
+        </div>
+
+        <div class="current-status" id="currentStatus">
+          <p id="currentStatusText">Aguardando registro...</p>
+        </div>
+
+        <div class="presence-btn-container">
+          <button
+            id="presenceBtn"
+            class="presence-btn btn-disabled"
+            disabled
+          >
+            <span id="presenceBtnText">Aguardando...</span>
+          </button>
+        </div>
+
+        <div class="location-info">
+          <h4>Local mais próximo</h4>
+          <p id="locationName">-</p>
+          <p id="locationDistance" class="text-sm text-secondary"></p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { supabase } from './js/supabase.js';
+    import { getLocalStorageUser, signOut } from './js/auth.js';
+    import { registrarPresenca, buscarUltimoRegistro, formatarDataHora } from './js/registro.js';
+    import { obterLocalizacaoAtual, verificarSeDentroDoRaio, formatarDistancia } from './js/geo.js';
+    import { buscarLocais } from './js/admin.js';
+
+    const currentUser = getLocalStorageUser();
+    
+    if (!currentUser) {
+      window.location.href = '/index.html';
+    } else {
+      document.getElementById('userName').textContent = currentUser.profile?.nome || 'Usuário';
+      document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'U').charAt(0).toUpperCase();
+      document.getElementById('greeting').textContent = `Olá, ${currentUser.profile?.nome?.split(' ')[0] || 'Usuário'}!`;
+    }
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const presenceBtn = document.getElementById('presenceBtn');
+    const presenceBtnText = document.getElementById('presenceBtnText');
+    const locationStatus = document.getElementById('locationStatus');
+    const locationStatusText = document.getElementById('locationStatusText');
+    const locationName = document.getElementById('locationName');
+    const locationDistance = document.getElementById('locationDistance');
+    const currentStatus = document.getElementById('currentStatus');
+    const currentStatusText = document.getElementById('currentStatusText');
+    const alertContainer = document.getElementById('alertContainer');
+
+    let locaisAutorizados = [];
+    let ultimaPosicao = null;
+    let localAtual = null;
+    let ultimoRegistro = null;
+
+    menuToggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    logoutBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut();
+      localStorage.removeItem('user');
+      window.location.href = '/index.html';
+    });
+
+    presenceBtn?.addEventListener('click', async () => {
+      if (!localAtual || presenceBtn.disabled) return;
+
+      try {
+        presenceBtn.disabled = true;
+        presenceBtnText.textContent = 'Registrando...';
+
+        const tipo = ultimoRegistro?.tipo === 'entrada' ? 'saida' : 'entrada';
+
+        const { error } = await registrarPresenca(
+          currentUser.user.id,
+          localAtual.id,
+          tipo,
+          ultimaPosicao.latitude,
+          ultimaPosicao.longitude
+        );
+
+        if (error) throw error;
+
+        showAlert(tipo === 'entrada' ? 'Entrada registrada com sucesso!' : 'Saída registrada com sucesso!', 'success');
+        
+        await carregarUltimoRegistro();
+        atualizarBotaoPresenca();
+      } catch (error) {
+        console.error('Erro ao registrar:', error);
+        showAlert('Erro ao registrar presença. Tente novamente.', 'error');
+      } finally {
+        presenceBtn.disabled = false;
+      }
+    });
+
+    function showAlert(message, type = 'info') {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type}`;
+      alertDiv.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>${message}</span>
+      `;
+      alertContainer.appendChild(alertDiv);
+      setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    async function carregarLocais() {
+      try {
+        const locaisIds = currentUser.profile?.locais_autorizados || [];
+        if (locaisIds.length === 0) {
+          atualizarStatusLocal('Nenhum local autorizado', 'pending');
+          return;
+        }
+
+        const { data } = await supabase
+          .from('locais')
+          .select('*')
+          .in('id', locaisIds);
+
+        locaisAutorizados = data || [];
+        
+        if (locaisAutorizados.length > 0) {
+          verificarLocalizacao();
+        } else {
+          atualizarStatusLocal('Nenhum local autorizado', 'pending');
+        }
+      } catch (error) {
+        console.error('Erro ao carregar locais:', error);
+        atualizarStatusLocal('Erro ao carregar locais', 'outside');
+      }
+    }
+
+    async function verificarLocalizacao() {
+      try {
+        const pos = await obterLocalizacaoAtual();
+        ultimaPosicao = pos;
+
+        let localMaisProximo = null;
+        let distanciaAteLocal = null;
+        let dentroDoRaio = false;
+
+        locaisAutorizados.forEach((local) => {
+          const { dentro, distancia } = verificarSeDentroDoRaio(
+            pos.latitude,
+            pos.longitude,
+            local.latitude,
+            local.longitude,
+            local.raio_metros || 100
+          );
+
+          if (dentro) {
+            dentroDoRaio = true;
+            if (!localMaisProximo || distancia < distanciaAteLocal) {
+              localMaisProximo = local;
+              distanciaAteLocal = distancia;
+            }
+          } else if (!localMaisProximo || distancia < distanciaAteLocal) {
+            localMaisProximo = local;
+            distanciaAteLocal = distancia;
+          }
+        });
+
+        localAtual = dentroDoRaio ? localMaisProximo : null;
+
+        if (localMaisProximo) {
+          locationName.textContent = localMaisProximo.nome;
+          locationDistance.textContent = `Distância: ${formatarDistancia(distanciaAteLocal)}`;
+        }
+
+        if (dentroDoRaio) {
+          atualizarStatusLocal(`Dentro do raio permitido (${localMaisProximo.nome})`, 'inside');
+        } else {
+          atualizarStatusLocal(`Fora do raio permitido (${localMaisProximo?.nome || ''})`, 'outside');
+        }
+
+        atualizarBotaoPresenca();
+      } catch (error) {
+        console.error('Erro ao verificar localização:', error);
+        atualizarStatusLocal(error.message, 'outside');
+      }
+    }
+
+    function atualizarStatusLocal(texto, status) {
+      locationStatus.className = `location-status ${status}`;
+      locationStatusText.textContent = texto;
+    }
+
+    async function carregarUltimoRegistro() {
+      try {
+        const registro = await buscarUltimoRegistro(currentUser.user.id);
+        ultimoRegistro = registro;
+
+        if (registro) {
+          const status = registro.tipo === 'entrada' ? 'Entrada registrada' : 'Saída registrada';
+          const dataFormatada = formatarDataHora(registro.data_hora);
+          currentStatusText.textContent = `${status} às ${dataFormatada}`;
+          currentStatus.className = `current-status status-${registro.tipo}`;
+        } else {
+          currentStatusText.textContent = 'Aguardando registro...';
+          currentStatus.className = 'current-status';
+        }
+      } catch (error) {
+        console.error('Erro ao carregar último registro:', error);
+      }
+    }
+
+    function atualizarBotaoPresenca() {
+      if (!localAtual) {
+        presenceBtn.disabled = true;
+        presenceBtn.className = 'presence-btn btn-disabled';
+        presenceBtnText.textContent = 'Fora do local';
+        return;
+      }
+
+      if (!ultimoRegistro || ultimoRegistro.tipo === 'saida') {
+        presenceBtn.disabled = false;
+        presenceBtn.className = 'presence-btn btn-entrada';
+        presenceBtnText.textContent = 'Registrar Entrada';
+      } else {
+        presenceBtn.disabled = false;
+        presenceBtn.className = 'presence-btn btn-saida';
+        presenceBtnText.textContent = 'Registrar Saída';
+      }
+    }
+
+    carregarLocais();
+    carregarUltimoRegistro();
+
+    setInterval(verificarLocalizacao, 30000);
+  </script>
+</body>
+</html>

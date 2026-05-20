@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Histórico Geral - Controle de Presença">
+  <meta name="theme-color" content="#1e293b">
+  <title>Histórico Geral - Controle de Presença</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar" id="sidebar">
+      <div class="admin-sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h1>Admin</h1>
+      </div>
+
+      <nav class="admin-sidebar-nav">
+        <a href="/admin/index.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          Dashboard
+        </a>
+        <a href="/admin/locais.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          Locais
+        </a>
+        <a href="/admin/usuarios.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          Usuários
+        </a>
+        <a href="/admin/historico.html" class="active">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+          </svg>
+          Histórico
+        </a>
+        <a href="#" id="logoutBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sair
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-header">
+        <h2>Histórico Geral de Registros</h2>
+        <button class="btn btn-primary" id="btnExportar">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Exportar CSV
+        </button>
+      </header>
+
+      <div class="data-table">
+        <div class="filter-bar">
+          <select id="filtroUsuario" style="flex: 1; min-width: 200px;">
+            <option value="">Todos Usuários</option>
+          </select>
+          <select id="filtroLocal" style="flex: 1; min-width: 200px;">
+            <option value="">Todos Locais</option>
+          </select>
+          <select id="filtroPeriodo" style="width: auto;">
+            <option value="7">Últimos 7 dias</option>
+            <option value="30">Últimos 30 dias</option>
+            <option value="90">Últimos 90 dias</option>
+            <option value="todos">Todos</option>
+          </select>
+        </div>
+
+        <div class="data-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Local</th>
+                <th>Tipo</th>
+                <th>Data/Hora</th>
+                <th>Tempo Permanência</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaRegistros">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <div class="loading-spinner">
+                    <span class="loading"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h4>Nenhum registro encontrado</h4>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { getLocalStorageUser, signOut } from '../js/auth.js';
+    import { supabase } from '../js/supabase.js';
+    import { exportarParaCSV, formatarDataParaNomeArquivo } from '../js/export.js';
+
+    const currentUser = getLocalStorageUser();
+    
+    if (!currentUser || currentUser.profile?.role !== 'admin') {
+      window.location.href = '/index.html';
+    }
+
+    const tabelaRegistros = document.getElementById('tabelaRegistros');
+    const emptyState = document.getElementById('emptyState');
+    const filtroUsuario = document.getElementById('filtroUsuario');
+    const filtroLocal = document.getElementById('filtroLocal');
+    const filtroPeriodo = document.getElementById('filtroPeriodo');
+    const btnExportar = document.getElementById('btnExportar');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    let todosUsuarios = [];
+    let todosLocais = [];
+    let todosRegistros = [];
+
+    logoutBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut();
+      localStorage.removeItem('user');
+      window.location.href = '/index.html';
+    });
+
+    filtroUsuario?.addEventListener('change', carregarRegistros);
+    filtroLocal?.addEventListener('change', carregarRegistros);
+    filtroPeriodo?.addEventListener('change', carregarRegistros);
+
+    btnExportar?.addEventListener('click', () => {
+      const registrosFiltrados = getRegistrosFiltrados();
+      if (registrosFiltrados.length > 0) {
+        exportarParaCSV(registrosFiltrados, `registros_${formatarDataParaNomeArquivo()}.csv`);
+      } else {
+        alert('Nenhum registro para exportar');
+      }
+    });
+
+    async function carregarFiltros() {
+      const { data: usuarios } = await supabase.from('users').select('id, nome, email');
+      const { data: locais } = await supabase.from('locais').select('id, nome');
+
+      todosUsuarios = usuarios || [];
+      todosLocais = locais || [];
+
+      filtroUsuario.innerHTML = '<option value="">Todos Usuários</option>' +
+        todosUsuarios.map(u => `<option value="${u.id}">${u.nome} (${u.email})</option>`).join('');
+      
+      filtroLocal.innerHTML = '<option value="">Todos Locais</option>' +
+        todosLocais.map(l => `<option value="${l.id}">${l.nome}</option>`).join('');
+    }
+
+    async function carregarRegistros() {
+      const { data, error } = await supabase
+        .from('registros')
+        .select(`
+          *,
+          locais (nome),
+          users (nome, email)
+        `)
+        .order('data_hora', { ascending: false });
+
+      if (error) {
+        console.error('Erro:', error);
+        return;
+      }
+
+      todosRegistros = data || [];
+      exibirRegistros(getRegistrosFiltrados());
+    }
+
+    function getRegistrosFiltrados() {
+      const userId = filtroUsuario.value;
+      const localId = filtroLocal.value;
+      const periodo = filtroPeriodo.value;
+
+      let filtrados = todosRegistros;
+
+      if (userId) {
+        filtrados = filtrados.filter(r => r.user_id === userId);
+      }
+
+      if (localId) {
+        filtrados = filtrados.filter(r => r.local_id === localId);
+      }
+
+      if (periodo !== 'todos') {
+        const dias = parseInt(periodo);
+        const dataLimite = new Date();
+        dataLimite.setDate(dataLimite.getDate() - dias);
+        filtrados = filtrados.filter(r => new Date(r.data_hora) >= dataLimite);
+      }
+
+      return filtrados;
+    }
+
+    function exibirRegistros(registros) {
+      if (!registros || registros.length === 0) {
+        tabelaRegistros.parentElement.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tabelaRegistros.parentElement.classList.remove('hidden');
+
+      tabelaRegistros.innerHTML = registros.map(registro => `
+        <tr>
+          <td>${registro.users?.nome || '-'}</td>
+          <td>${registro.locais?.nome || '-'}</td>
+          <td>${getTipoBadge(registro.tipo)}</td>
+          <td>${formatarDataHora(registro.data_hora)}</td>
+          <td>${registro.tempo_permanencia || '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function getTipoBadge(tipo) {
+      const badgeClass = tipo === 'entrada' ? 'badge-success' : 'badge-danger';
+      const badgeText = tipo === 'entrada' ? 'Entrada' : 'Saída';
+      return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+    }
+
+    function formatarDataHora(dataIso) {
+      if (!dataIso) return '-';
+      const data = new Date(dataIso);
+      return data.toLocaleString('pt-BR');
+    }
+
+    carregarFiltros();
+    carregarRegistros();
+  </script>
+</body>
+</html>

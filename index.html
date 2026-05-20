@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema de Controle de Presença com Geolocalização">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z'/></svg>">
+  <title>Login - Controle de Presença</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <h1>Controle de Presença</h1>
+          <p>Faça login para continuar</p>
+        </div>
+
+        <form id="loginForm" class="login-form">
+          <div class="form-group">
+            <label for="email" class="label">E-mail</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="input"
+              placeholder="seu@email.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="label">Senha</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="input"
+              placeholder="••••••••"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+
+          <div id="loginError" class="login-error"></div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-block" id="loginBtn">
+            <span id="loginBtnText">Entrar</span>
+            <span id="loginBtnLoading" class="login-loading hidden">
+              <span class="spinner"></span>
+              Entrando...
+            </span>
+          </button>
+        </form>
+
+        <div class="text-center mt-4">
+          <p class="text-sm text-secondary">
+            Esqueceu sua senha? <a href="#" style="color: var(--primary);">Recuperar acesso</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { signIn, setLocalStorageUser } from './js/auth.js';
+
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginBtnText = document.getElementById('loginBtnText');
+    const loginBtnLoading = document.getElementById('loginBtnLoading');
+    const loginError = document.getElementById('loginError');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      loginBtn.disabled = true;
+      loginBtnText.classList.add('hidden');
+      loginBtnLoading.classList.remove('hidden');
+      loginError.classList.remove('show');
+
+      const { user, profile, error } = await signIn(email, password);
+
+      if (error) {
+        loginError.textContent = error.message || 'Erro ao fazer login. Tente novamente.';
+        loginError.classList.add('show');
+        
+        loginBtn.disabled = false;
+        loginBtnText.classList.remove('hidden');
+        loginBtnLoading.classList.add('hidden');
+        return;
+      }
+
+      setLocalStorageUser({ user, profile });
+
+      if (profile.role === 'admin') {
+        window.location.href = '/admin/index.html';
+      } else {
+        window.location.href = '/dashboard.html';
+      }
+    });
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('SW registered:', registration);
+        }).catch(error => {
+          console.log('SW registration failed:', error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

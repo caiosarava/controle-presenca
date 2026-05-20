@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Histórico - Controle de Presença">
+  <meta name="theme-color" content="#2563eb">
+  <title>Histórico - Controle de Presença</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h1>Controle de Presença</h1>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard.html">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Início
+        </a>
+        <a href="/historico.html" class="active">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Histórico
+        </a>
+        <a href="#" id="logoutBtn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          Sair
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <button class="btn-icon menu-toggle" id="menuToggle">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <h2>Meu Histórico</h2>
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <span class="user-name" id="userName">Carregando...</span>
+        </div>
+      </header>
+
+      <div class="data-table">
+        <div class="data-table-header">
+          <h3>Registros</h3>
+          <div class="flex gap-2">
+            <select id="filtroPeriodo" class="input" style="width: auto;">
+              <option value="7">Últimos 7 dias</option>
+              <option value="30">Últimos 30 dias</option>
+              <option value="90">Últimos 90 dias</option>
+              <option value="todos">Todos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="data-table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Local</th>
+                <th>Tipo</th>
+                <th>Tempo Permanência</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaRegistros">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <div class="loading-spinner">
+                    <span class="loading"></span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty-state hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h4>Nenhum registro encontrado</h4>
+        <p>Seus registros aparecerão aqui</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module">
+    import { getLocalStorageUser, signOut } from './js/auth.js';
+    import { buscarRegistros, formatarData, formatarHora } from './js/registro.js';
+
+    const currentUser = getLocalStorageUser();
+    
+    if (!currentUser) {
+      window.location.href = '/index.html';
+    } else {
+      document.getElementById('userName').textContent = currentUser.profile?.nome || 'Usuário';
+      document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'U').charAt(0).toUpperCase();
+    }
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const tabelaRegistros = document.getElementById('tabelaRegistros');
+    const emptyState = document.getElementById('emptyState');
+    const filtroPeriodo = document.getElementById('filtroPeriodo');
+
+    menuToggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    logoutBtn?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await signOut();
+      localStorage.removeItem('user');
+      window.location.href = '/index.html';
+    });
+
+    filtroPeriodo?.addEventListener('change', () => {
+      carregarRegistros();
+    });
+
+    async function carregarRegistros() {
+      try {
+        const dias = filtroPeriodo.value;
+        const dataFim = new Date();
+        let dataInicio = new Date();
+
+        if (dias !== 'todos') {
+          dataInicio.setDate(dataInicio.getDate() - parseInt(dias));
+        } else {
+          dataInicio = new Date('2000-01-01');
+        }
+
+        const { data } = await buscarRegistros(currentUser.user.id, {
+          dataInicio: dataInicio.toISOString(),
+          dataFim: dataFim.toISOString(),
+        });
+
+        exibirRegistros(data || []);
+      } catch (error) {
+        console.error('Erro ao carregar registros:', error);
+        tabelaRegistros.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar registros</td></tr>';
+      }
+    }
+
+    function exibirRegistros(registros) {
+      if (!registros || registros.length === 0) {
+        tabelaRegistros.parentElement.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tabelaRegistros.parentElement.classList.remove('hidden');
+
+      tabelaRegistros.innerHTML = registros.map((registro) => `
+        <tr>
+          <td>${formatarData(registro.data_hora)}</td>
+          <td>${formatarHora(registro.data_hora)}</td>
+          <td>${registro.locais?.nome || '-'}</td>
+          <td>${getTipoBadge(registro.tipo)}</td>
+          <td>${registro.tempo_permanencia || '-'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function getTipoBadge(tipo) {
+      const badgeClass = tipo === 'entrada' ? 'badge-success' : 'badge-danger';
+      const badgeText = tipo === 'entrada' ? 'Entrada' : 'Saída';
+      return `<span class="badge ${badgeClass}">${badgeText}</span>`;
+    }
+
+    carregarRegistros();
+  </script>
+</body>
+</html>
