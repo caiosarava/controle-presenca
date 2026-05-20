@@ -175,9 +175,9 @@ export async function deletarLocal(localId) {
 
 export async function buscarEstatisticas() {
   try {
-    const { data: totalUsuarios } = await supabase
-      .from('users')
-      .select('*', { count: 'exact', head: true });
+    // Usar função SQL para contar usuários (respeita RLS)
+    const { data: totalUsuariosData, error: erroUsuarios } = await supabase.rpc('get_total_usuarios');
+    const totalUsuarios = erroUsuarios ? 0 : (totalUsuariosData || 0);
 
     const { data: totalLocais } = await supabase
       .from('locais')
@@ -185,7 +185,7 @@ export async function buscarEstatisticas() {
 
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
-    
+
     const { data: registrosHoje } = await supabase
       .from('registros')
       .select('*', { count: 'exact', head: true })
@@ -199,6 +199,20 @@ export async function buscarEstatisticas() {
   } catch (error) {
     console.error('Erro ao buscar estatísticas:', error);
     return null;
+  }
+}
+
+export async function buscarPresencaDia() {
+  try {
+    // Usar função SQL para contar presenças do dia
+    const { data, error } = await supabase.rpc('get_presenca_dia');
+    
+    if (error) throw error;
+    
+    return data || 0;
+  } catch (error) {
+    console.error('Erro ao buscar presença do dia:', error);
+    return 0;
   }
 }
 

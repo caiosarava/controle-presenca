@@ -172,59 +172,64 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module">
-    import { getLocalStorageUser, signOut } from '../js/auth.js';
-    import { buscarEstatisticas, buscarUltimosRegistros, buscarRegistrosPorPeriodo } from '../js/admin.js';
+<script type="module">
+import { getLocalStorageUser, signOut } from '../js/auth.js';
+import { buscarEstatisticas, buscarUltimosRegistros, buscarRegistrosPorPeriodo, buscarPresencaDia } from '../js/admin.js';
 
-    const currentUser = getLocalStorageUser();
-    
-    if (!currentUser || currentUser.profile?.role !== 'admin') {
-      window.location.href = '/index.html';
-    } else {
-      document.getElementById('userName').textContent = currentUser.profile?.nome || 'Admin';
-      document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'A').charAt(0).toUpperCase();
-    }
+const currentUser = getLocalStorageUser();
 
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const logoutBtn = document.getElementById('logoutBtn');
+if (!currentUser || currentUser.profile?.role !== 'admin') {
+  window.location.href = '/index.html';
+} else {
+  document.getElementById('userName').textContent = currentUser.profile?.nome || 'Admin';
+  document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'A').charAt(0).toUpperCase();
+}
 
-    menuToggle?.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-    });
+const menuToggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+const logoutBtn = document.getElementById('logoutBtn');
 
-    logoutBtn?.addEventListener('click', async (e) => {
-      e.preventDefault();
-      await signOut();
-      localStorage.removeItem('user');
-      window.location.href = '/index.html';
-    });
+menuToggle?.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
 
-    async function carregarDashboard() {
-      await carregarEstatisticas();
-      await carregarGraficos();
-      await carregarUltimosRegistros();
-    }
+logoutBtn?.addEventListener('click', async (e) => {
+  e.preventDefault();
+  await signOut();
+  localStorage.removeItem('user');
+  window.location.href = '/index.html';
+});
 
-    async function carregarEstatisticas() {
-      const stats = await buscarEstatisticas();
-      
-      if (stats) {
-        document.getElementById('totalUsuarios').textContent = stats.totalUsuarios || 0;
-        document.getElementById('totalLocais').textContent = stats.totalLocais || 0;
-        document.getElementById('registrosHoje').textContent = stats.registrosHoje || 0;
-        
-        const agora = new Date();
-        const horaAtual = agora.getHours();
-        const minutosAtuais = agora.getMinutes();
-        
-        let presenca = 0;
-        if (horaAtual >= 8 && horaAtual < 18) {
-          presenca = Math.floor(Math.random() * 50) + 10;
-        }
-        document.getElementById('presencaAtual').textContent = presenca;
-      }
-    }
+let pollingInterval;
+
+async function carregarDashboard() {
+  await carregarEstatisticas();
+  await carregarGraficos();
+  await carregarUltimosRegistros();
+  
+  // Configurar polling de 5 minutos
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+  }
+  pollingInterval = setInterval(async () => {
+    await carregarEstatisticas();
+    await carregarUltimosRegistros();
+  }, 5 * 60 * 1000); // 5 minutos
+}
+
+async function carregarEstatisticas() {
+  const stats = await buscarEstatisticas();
+
+  if (stats) {
+    document.getElementById('totalUsuarios').textContent = stats.totalUsuarios || 0;
+    document.getElementById('totalLocais').textContent = stats.totalLocais || 0;
+    document.getElementById('registrosHoje').textContent = stats.registrosHoje || 0;
+
+    // Buscar presença atual do banco (registros de entrada no dia)
+    const presenca = await buscarPresencaDia();
+    document.getElementById('presencaAtual').textContent = presenca;
+  }
+}
 
     async function carregarGraficos() {
       const dados = await buscarRegistrosPorPeriodo(7);
@@ -309,13 +314,19 @@
       return `<span class="badge ${badgeClass}">${badgeText}</span>`;
     }
 
-    function formatarDataHora(dataIso) {
-      if (!dataIso) return '-';
-      const data = new Date(dataIso);
-      return data.toLocaleString('pt-BR');
-    }
+function formatarDataHora(dataIso) {
+  if (!dataIso) return '-';
+  const data = new Date(dataIso);
+  return data.toLocaleString('pt-BR');
+}
 
-    carregarDashboard();
+window.addEventListener('beforeunload', () => {
+  if (pollingInterval) {
+    clearInterval(pollingInterval);
+  }
+});
+
+carregarDashboard();
   </script>
 </body>
 </html>
