@@ -100,25 +100,33 @@
       loginBtnLoading.classList.remove('hidden');
       loginError.classList.remove('show');
 
-      const { user, profile, error } = await signIn(email, password);
+  const result = await signIn(email, password);
 
-      if (error) {
-        loginError.textContent = error.message || 'Erro ao fazer login. Tente novamente.';
-        loginError.classList.add('show');
-        
-        loginBtn.disabled = false;
-        loginBtnText.classList.remove('hidden');
-        loginBtnLoading.classList.add('hidden');
-        return;
-      }
+  if (result.error) {
+    let errorMessage = 'Erro ao fazer login. ';
+    if (result.error.message && result.error.message.includes('perfil')) {
+      errorMessage = result.error.message;
+    } else if (result.error.message && result.error.message.includes('senha')) {
+      errorMessage = 'E-mail ou senha inválidos.';
+    } else if (result.error.message) {
+      errorMessage = result.error.message;
+    }
+    loginError.textContent = errorMessage;
+    loginError.classList.add('show');
+    
+    loginBtn.disabled = false;
+    loginBtnText.classList.remove('hidden');
+    loginBtnLoading.classList.add('hidden');
+    return;
+  }
 
-      setLocalStorageUser({ user, profile });
+  setLocalStorageUser(result);
 
-      if (profile.role === 'admin') {
-        window.location.href = '/admin/index.html';
-      } else {
-        window.location.href = '/dashboard.html';
-      }
+  if (result.profile.role === 'admin') {
+    window.location.href = '/admin/index.html';
+  } else {
+    window.location.href = '/dashboard.html';
+  }
     });
 
     if ('serviceWorker' in navigator) {

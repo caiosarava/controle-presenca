@@ -2,18 +2,27 @@ import { supabase } from './supabase.js';
 
 export async function signIn(email, password) {
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) throw error;
+    if (authError) throw authError;
+    if (!data.user) throw new Error('Usuário não encontrado');
 
-    const { data: userData } = await supabase
+    // Aguarda um pouco para garantir que o trigger foi executado
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const { data: userData, error: profileError } = await supabase
       .from('users')
       .select('*')
       .eq('id', data.user.id)
       .single();
+
+    if (profileError) {
+      console.error('Erro ao buscar perfil:', profileError);
+      throw new Error('Perfil de usuário não encontrado. Tente fazer login novamente ou contate o administrador.');
+    }
 
     return { user: data.user, profile: userData, error: null };
   } catch (error) {
