@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sistema de Controle de Presença com Geolocalização">
-  <meta name="theme-color" content="#2563eb">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z'/></svg>">
-  <title>Login - Controle de Presença</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sistema de Controle de Presença com Geolocalização">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Presença">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Presença">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-5-5 1.41-1.41L11 14.17l7.59-7.59L20 8l-9 9z'/></svg>">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/assets/icon-152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/assets/icon-192.png">
+<title>Login - Controle de Presença</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/login.css">
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/login.css">
+<link rel="stylesheet" href="/css/pwa.css">
 </head>
 <body>
   <div class="login-page">
@@ -129,15 +139,37 @@
   }
     });
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').then(registration => {
-          console.log('SW registered:', registration);
-        }).catch(error => {
-          console.log('SW registration failed:', error);
-        });
-      });
-    }
+<!-- PWA Install Banner -->
+<div id="install-pwa-banner" class="install-banner hidden">
+  <div class="install-banner-content">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    </svg>
+    <span>Instale nosso app para uma experiência completa</span>
+    <div class="install-banner-actions">
+      <button id="btn-instalar-pwa" class="btn-install">Instalar</button>
+      <button id="btn-fechar-pwa" class="btn-secondary">Depois</button>
+    </div>
+  </div>
+</div>
+
+<!-- Update Banner -->
+<div id="update-pwa-banner" class="update-banner hidden">
+  <div class="update-banner-content">
+    <span>Nova versão disponível! Atualize o app.</span>
+    <button id="btn-atualizar-pwa" class="btn-install">Atualizar</button>
+  </div>
+</div>
+
+<!-- Connection Status -->
+<div id="connection-status" class="connection-status online">
+  <span class="status-indicator"></span>
+  <span class="status-text">Online</span>
+</div>
+
+<script type="module" src="/js/pwa.js"></script>
+</body>
+</html>
   </script>
 </body>
 </html>

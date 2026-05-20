@@ -1,9 +1,10 @@
-const CACHE_NAME = 'controle-presenca-v1';
+const CACHE_NAME = 'controle-presenca-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/dashboard.html',
   '/historico.html',
+  '/offline.html',
   '/admin/index.html',
   '/admin/locais.html',
   '/admin/usuarios.html',
@@ -20,10 +21,18 @@ const ASSETS_TO_CACHE = [
   '/js/registro.js',
   '/js/admin.js',
   '/js/export.js',
+  '/js/pwa.js',
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-  'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+  'https://cdn.jsdelivr.net/npm/chart.js'
 ];
+
+// Estratégia de cache: Cache First para assets, Network First para API
+const CACHE_STRATEGIES = {
+  'fonts': 'cache-first',
+  'images': 'cache-first',
+  'api': 'network-first',
+  'default': 'cache-first'
+};
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -50,28 +59,128 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Ignorar requisições não-GET
   if (event.request.method !== 'GET') {
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        return cachedResponse;
-      });
+  // Ignorar requisições externas (ex: fonts.googleapis.com)
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
 
-      return cachedResponse || fetchPromise;
-    })
-  );
+  const strategy = getCacheStrategy(event.request);
+
+  if (strategy === 'cache-first') {
+    event.respondWith(cacheFirst(event.request));
+  } else if (strategy === 'network-first') {
+    event.respondWith(networkFirst(event.request));
+  } else {
+    event.respondWith(defaultStrategy(event.request));
+  }
 });
+
+/**
+ * Estratégia Cache First
+ */
+async function cacheFirst(request) {
+  const cachedResponse = await caches.match(request);
+  
+  if (cachedResponse) {
+    return cachedResponse;
+  }
+
+  try {
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    // Se falhar e for navegação, retorna página offline
+    if (request.mode === 'navigate') {
+      return caches.match('/offline.html');
+    }
+    
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+/**
+ * Estratégia Network First
+ */
+async function networkFirst(request) {
+  try {
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse && networkResponse.status === 200) {
+      const cache = await caches.open(CACHE_NAME);
+      cache.put(request, networkResponse.clone());
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Se falhar e for navegação, retorna página offline
+    if (request.mode === 'navigate') {
+      return caches.match('/offline.html');
+    }
+    
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+/**
+ * Estratégia padrão
+ */
+async function defaultStrategy(request) {
+  const cachedResponse = await caches.match(request);
+  
+  const fetchPromise = fetch(request).then((networkResponse) => {
+    if (networkResponse && networkResponse.status === 200) {
+      caches.open(CACHE_NAME).then((cache) => {
+        cache.put(request, networkResponse.clone());
+      });
+    }
+    return networkResponse;
+  }).catch(() => {
+    return cachedResponse;
+  });
+
+  return cachedResponse || fetchPromise;
+}
+
+/**
+ * Determina estratégia de cache baseada na URL
+ */
+function getCacheStrategy(request) {
+  const url = new URL(request.url);
+  
+  // API requests
+  if (url.pathname.includes('/api/') || url.pathname.includes('/rest/')) {
+    return CACHE_STRATEGIES.api;
+  }
+  
+  // Fontes
+  if (url.pathname.match(/\.(woff2?|ttf|otf)$/)) {
+    return CACHE_STRATEGIES.fonts;
+  }
+  
+  // Imagens
+  if (url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp)$/)) {
+    return CACHE_STRATEGIES.images;
+  }
+  
+  return CACHE_STRATEGIES.default;
+}
 
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.json() : {};

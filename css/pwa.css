@@ -1,0 +1,223 @@
+/* ============================================
+   PWA Styles - Controle de Presença
+   ============================================ */
+
+/* Install Banner */
+.install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+}
+
+.install-banner:not(.hidden) {
+  transform: translateY(0);
+}
+
+.install-banner-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+}
+
+.install-banner-content svg {
+  flex-shrink: 0;
+  color: #fbbf24;
+}
+
+.install-banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.btn-install {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-install:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Update Banner */
+.update-banner {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100%);
+  background: #16a34a;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.update-banner:not(.hidden) {
+  transform: translateX(-50%) translateY(0);
+}
+
+.update-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Connection Status */
+.connection-status {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 9998;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.connection-status.online {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.connection-status.offline {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.connection-status.online .status-indicator {
+  background: #22c55e;
+}
+
+.connection-status.offline .status-indicator {
+  background: #ef4444;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Offline Notification */
+.offline-notification {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  max-width: 90%;
+  width: 100%;
+}
+
+.offline-notification svg {
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.offline-notification span {
+  flex: 1;
+  font-size: 0.875rem;
+}
+
+.offline-notification button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.offline-notification button:hover {
+  opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .install-banner-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .install-banner-actions {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .connection-status {
+    top: auto;
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    justify-content: center;
+  }
+}
+
+/* Hidden utility */
+.hidden {
+  display: none !important;
+}

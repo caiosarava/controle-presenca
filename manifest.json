@@ -2,17 +2,57 @@
   "name": "Controle de Presença",
   "short_name": "Presença",
   "description": "Sistema de controle de presença com geolocalização",
-  "start_url": "/dashboard.html",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls", "standalone", "minimal-ui", "browser"],
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "dir": "ltr",
   "icons": [
+    {
+      "src": "/assets/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/assets/icon-512.png",
@@ -21,13 +61,20 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["productivity", "utilities"],
+  "categories": ["productivity", "utilities", "business"],
   "shortcuts": [
     {
-      "name": "Registrar Presença",
-      "short_name": "Registrar",
-      "description": "Registrar entrada ou saída",
-      "url": "/dashboard.html",
+      "name": "Registrar Entrada",
+      "short_name": "Entrada",
+      "description": "Registrar entrada",
+      "url": "/dashboard.html?acao=entrada",
+      "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Registrar Saída",
+      "short_name": "Saída",
+      "description": "Registrar saída",
+      "url": "/dashboard.html?acao=saida",
       "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
     },
     {
@@ -37,5 +84,8 @@
       "url": "/historico.html",
       "icons": [{ "src": "/assets/icon-192.png", "sizes": "192x192" }]
     }
-  ]
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false,
+  "handle_links": "preferred"
 }

@@ -1,143 +1,198 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerar Ícones PWA</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      max-width: 800px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #f8fafc;
-    }
-    .container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    h1 {
-      color: #1e293b;
-      margin-bottom: 1rem;
-    }
-    p {
-      color: #64748b;
-      margin-bottom: 1.5rem;
-    }
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:hover {
-      background: #1d4ed8;
-    }
-    .icons-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-    .icon-item {
-      text-align: center;
-      padding: 1rem;
-      background: #f8fafc;
-      border-radius: 8px;
-    }
-    .icon-item img {
-      width: 64px;
-      height: 64px;
-      margin-bottom: 0.5rem;
-    }
-    .icon-item span {
-      display: block;
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-    .success {
-      background: #16a34a;
-      color: white;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      display: none;
-    }
-    .success.show {
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Ícones PWA</title>
+    <style>
+        body {
+            font-family: Inter, system-ui, sans-serif;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1e293b; margin-bottom: 1rem; }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .icon-item {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .icon-item canvas {
+            display: block;
+            margin: 0 auto 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .btn:hover { background: #1d4ed8; }
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Gerador de Ícones PWA</h1>
-    <p>Clique no botão abaixo para baixar os ícones nos tamanhos 192x192 e 512x512.</p>
-    
-    <button onclick="generateIcons()">Gerar e Baixar Ícones</button>
-    
-    <div class="success" id="success">
-      Ícones gerados com sucesso! Verifique sua pasta de downloads.
-    </div>
-    
-    <div class="icons-grid">
-      <div class="icon-item">
-        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0OCIgZmlsbD0iIzI1NjNlYiIvPjxwYXRoIGQ9Ik01MCAyMiBDMzUgMjIgMjUgMzMgMjUgNDcgQzI1IDY1IDUwIDgyIDUwIDgyIEM1MCA4MiA3NSA2NSA3NSA0NyBDNzUgMzMgNjUgMjIgNTAgMjIgWiIgZmlsbD0id2hpdGUiIG9wYWNpdHk9IjAuOSIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNDciIHI9IjEyIiBmaWxsPSIjMjU2M2ViIi8+PHBhdGggZD0iTTQ1IDQ3IEw0OCA1MSBMNTUgNDMiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+" alt="Preview">
-        <span>Preview</span>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    async function generateIcons() {
-      const sizes = [192, 512];
-      const svgContent = `
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-              <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-            </linearGradient>
-          </defs>
-          <circle cx="50" cy="50" r="48" fill="url(#gradient)"/>
-          <path d="M50 22 C35 22 25 33 25 47 C25 65 50 82 50 82 C50 82 75 65 75 47 C75 33 65 22 50 22 Z" fill="white" opacity="0.9"/>
-          <circle cx="50" cy="47" r="12" fill="#2563eb"/>
-          <path d="M45 47 L48 51 L55 43" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      `;
-
-      for (const size of sizes) {
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
+    <div class="container">
+        <h1>Gerador de Ícones PWA</h1>
+        <p>Este script gera automaticamente os ícones necessários para o PWA.</p>
         
-        const img = new Image();
-        img.src = 'data:image/svg+xml;base64,' + btoa(svgContent);
+        <button class="btn" onclick="gerarIcones()">Gerar Ícones</button>
+        <button class="btn" onclick="baixarTodos()" style="background: #16a34a; margin-left: 0.5rem;">Baixar Todos</button>
         
-        await new Promise((resolve) => {
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0, size, size);
+        <div id="status" class="status"></div>
+        
+        <div class="icon-grid" id="iconGrid"></div>
+    </div>
+
+    <script>
+        const iconSizes = [
+            { name: 'icon-72.png', size: 72 },
+            { name: 'icon-96.png', size: 96 },
+            { name: 'icon-128.png', size: 128 },
+            { name: 'icon-144.png', size: 144 },
+            { name: 'icon-152.png', size: 152 },
+            { name: 'icon-192.png', size: 192 },
+            { name: 'icon-384.png', size: 384 },
+            { name: 'icon-512.png', size: 512 },
+            { name: 'icon-maskable-192.png', size: 192, maskable: true },
+            { name: 'icon-maskable-512.png', size: 512, maskable: true }
+        ];
+
+        let generatedIcons = [];
+
+        function drawIcon(canvas, size, maskable = false) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = size;
+            canvas.height = size;
+
+            // Background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, size, size);
+
+            // Circle background for maskable
+            if (maskable) {
+                ctx.fillStyle = '#2563eb';
+                ctx.beginPath();
+                ctx.arc(size/2, size/2, size * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                // Gradient circle
+                const gradient = ctx.createLinearGradient(0, 0, size, size);
+                gradient.addColorStop(0, '#2563eb');
+                gradient.addColorStop(1, '#1d4ed8');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(size/2, size/2, size * 0.45, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Checkmark
+            ctx.fillStyle = maskable ? '#ffffff' : '#ffffff';
+            const checkSize = size * 0.5;
+            const checkX = size * 0.25;
+            const checkY = size * 0.5;
             
-            canvas.toBlob((blob) => {
-              const link = document.createElement('a');
-              link.download = \`icon-\${size}.png\`;
-              link.href = URL.createObjectURL(blob);
-              link.click();
-              URL.revokeObjectURL(link.href);
-              resolve();
-            }, 'image/png');
-          };
-        });
-      }
-      
-      document.getElementById('success').classList.add('show');
-    }
-  </script>
+            // Check mark base
+            ctx.beginPath();
+            ctx.moveTo(checkX, checkY);
+            ctx.lineTo(checkX + checkSize * 0.3, checkY + checkSize * 0.3);
+            ctx.lineTo(checkX + checkSize, checkY - checkSize * 0.3);
+            ctx.lineWidth = maskable ? size * 0.08 : size * 0.06;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.stroke();
+
+            // Location pin icon overlay
+            if (!maskable && size >= 128) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(size/2, size/2, size * 0.2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function gerarIcones() {
+            const grid = document.getElementById('iconGrid');
+            grid.innerHTML = '';
+            generatedIcons = [];
+
+            iconSizes.forEach((icon, index) => {
+                const item = document.createElement('div');
+                item.className = 'icon-item';
+                
+                const canvas = document.createElement('canvas');
+                const label = document.createElement('div');
+                label.style.marginTop = '0.5rem';
+                label.style.fontSize = '0.875rem';
+                label.style.color = '#64748b';
+                label.textContent = `${icon.name} (${icon.size}x${icon.size})`;
+
+                drawIcon(canvas, icon.size, icon.maskable);
+                
+                const downloadLink = canvas.toDataURL('image/png');
+                generatedIcons.push({ name: icon.name, data: downloadLink });
+
+                item.appendChild(canvas);
+                item.appendChild(label);
+                grid.appendChild(item);
+            });
+
+            showStatus('Ícones gerados com sucesso! Clique em "Baixar Todos" para fazer download.');
+        }
+
+        function baixarTodos() {
+            if (generatedIcons.length === 0) {
+                showStatus('Gere os ícones primeiro!');
+                return;
+            }
+
+            generatedIcons.forEach((icon, index) => {
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.download = icon.name;
+                    link.href = icon.data;
+                    link.click();
+                }, index * 100);
+            });
+
+            showStatus('Downloads iniciados!');
+        }
+
+        function showStatus(msg) {
+            const status = document.getElementById('status');
+            status.textContent = msg;
+            status.style.display = 'block';
+        }
+
+        // Gerar ícones ao carregar
+        window.onload = gerarIcones;
+    </script>
 </body>
 </html>
