@@ -141,7 +141,7 @@
       cadastroError.classList.remove('show');
 
       try {
-        // Criar usuário no Supabase Auth
+        // Criar usuário no Supabase Auth (o trigger cria o perfil automaticamente)
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email,
           password,
@@ -153,21 +153,7 @@
         });
 
         if (authError) throw authError;
-
-        // Criar perfil na tabela users
-        const { error: profileError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: authData.user.id,
-              email: email,
-              nome: nome,
-              role: 'normal',
-              locais_autorizados: [],
-            },
-          ]);
-
-        if (profileError) throw profileError;
+        if (!authData.user) throw new Error('Erro ao criar usuário');
 
         // Sucesso - redirecionar para login
         alert('Cadastro realizado com sucesso! Faça login para continuar.');
@@ -175,7 +161,19 @@
         
       } catch (error) {
         console.error('Erro no cadastro:', error);
-        cadastroError.textContent = error.message || 'Erro ao cadastrar. Tente novamente.';
+        let errorMsg = 'Erro ao cadastrar. ';
+        
+        if (error.message && error.message.includes('duplicate')) {
+          errorMsg += 'Este e-mail já está cadastrado.';
+        } else if (error.message && error.message.includes('password')) {
+          errorMsg += 'Senha inválida.';
+        } else if (error.message) {
+          errorMsg += error.message;
+        } else {
+          errorMsg += 'Tente novamente.';
+        }
+        
+        cadastroError.textContent = errorMsg;
         cadastroError.classList.add('show');
         
         cadastroBtn.disabled = false;
