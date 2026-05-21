@@ -59,13 +59,21 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignorar requisições não-GET
+  // Ignorar requisições não-GET (deixa POST, PUT, DELETE passarem)
   if (event.request.method !== 'GET') {
     return;
   }
 
-  // Ignorar requisições externas (ex: fonts.googleapis.com)
-  if (!event.request.url.startsWith(self.location.origin)) {
+  const requestUrl = new URL(event.request.url);
+
+  // Ignorar requisições externas (ex: fonts.googleapis.com, CDN)
+  if (!requestUrl.origin.startsWith(self.location.origin)) {
+    return;
+  }
+
+  // Ignorar requisições de autenticação do Supabase
+  if (requestUrl.pathname.includes('/auth/v1/') || 
+      requestUrl.pathname.includes('/rest/v1/')) {
     return;
   }
 

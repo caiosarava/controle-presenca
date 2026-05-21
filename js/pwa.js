@@ -39,12 +39,17 @@ let isInstalled = false;
 
 /**
  * Inicializa o PWA
+ * Importante: Não bloqueia funcionalidades principais
  */
 async function initPWA() {
   // Verificar se o navegador suporta service workers
   if ('serviceWorker' in navigator) {
-    await registerServiceWorker();
-    setupServiceWorkerListeners();
+    try {
+      await registerServiceWorker();
+      setupServiceWorkerListeners();
+    } catch (error) {
+      console.warn('Service Worker registration failed (pode ser cache):', error);
+    }
   }
 
   // Setup do install prompt
@@ -56,8 +61,12 @@ async function initPWA() {
   // Adicionar listeners para online/offline
   setupConnectionListeners();
   
-  // Atualizar UI
-  updateConnectionStatus();
+  // Atualizar UI - não bloqueante
+  try {
+    updateConnectionStatus();
+  } catch (error) {
+    console.warn('Erro ao atualizar status de conexão:', error);
+  }
 }
 
 /**
@@ -201,7 +210,8 @@ async function installApp() {
 }
 
 /**
- * Atualiza status de conexão
+ * Verifica status de conexão
+ * Importante: Não bloqueia funcionalidades, apenas mostra status visual
  */
 function updateConnectionStatus() {
   const statusElement = document.getElementById('connection-status');
@@ -210,8 +220,18 @@ function updateConnectionStatus() {
     if (statusElement) {
       statusElement.classList.remove('offline');
       statusElement.classList.add('online');
-      statusElement.textContent = 'Online';
+      statusElement.querySelector('.status-text').textContent = 'Online';
     }
+    console.log('🟢 Online - Conexão disponível');
+  } else {
+    if (statusElement) {
+      statusElement.classList.remove('online');
+      statusElement.classList.add('offline');
+      statusElement.querySelector('.status-text').textContent = 'Offline';
+    }
+    console.log('🔴 Offline - Algumas funcionalidades podem não funcionar');
+  }
+}
   } else {
     if (statusElement) {
       statusElement.classList.remove('online');
@@ -223,15 +243,20 @@ function updateConnectionStatus() {
 
 /**
  * Configura listeners de conexão
+ * Importante: Apenas atualiza UI, não bloqueia funcionalidades
  */
 function setupConnectionListeners() {
   window.addEventListener('online', () => {
+    console.log('🟢 Conexão restaurada');
     updateConnectionStatus();
-    syncData();
+    // Não tenta sync imediatamente para não bloquear UI
+    setTimeout(() => syncData(), 1000);
   });
 
   window.addEventListener('offline', () => {
+    console.log('🔴 Sem conexão - modo offline ativado');
     updateConnectionStatus();
+    // Apenas notifica, não bloqueia o login
     showOfflineNotification();
   });
 }
