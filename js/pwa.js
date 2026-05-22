@@ -232,14 +232,6 @@ function updateConnectionStatus() {
     console.log('🔴 Offline - Algumas funcionalidades podem não funcionar');
   }
 }
-  } else {
-    if (statusElement) {
-      statusElement.classList.remove('online');
-      statusElement.classList.add('offline');
-      statusElement.textContent = 'Offline';
-    }
-  }
-}
 
 /**
  * Configura listeners de conexão
