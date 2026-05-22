@@ -12,6 +12,11 @@
 - Refactor the login and dashboard to use simpler language.
 - Performance optimization on location tracking and data fetching.
 
+## Admin Improvements
+- **Data Clarity:** Present statistics and history with a focus on readability for non-technical administrators.
+- **Mobile Admin:** Ensure all management features (users, locations) are easily accessible via bottom navigation.
+- **Modernized Charts:** Use the new color palette for charts to ensure visual consistency.
+
 ## Learning & Patterns
 - (Pending)
 
