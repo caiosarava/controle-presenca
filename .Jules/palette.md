@@ -1,3 +1,19 @@
-## 2026-05-21 - [Strict Micro-UX Scope]
-**Learning:** For agents focused on "micro-UX" improvements, a 50-line change limit is a critical constraint. Bundling multiple small accessibility improvements (like ARIA labels and password toggles) across multiple files can lead to PR rejection due to scope creep.
-**Action:** Prioritize a single, high-impact UX win per PR to ensure changes remain focused, easily reviewable, and strictly within the "micro" scope.
+# Palette UX/Accessibility Journal
+
+## Project Goals
+- **Friendly & Intuitive:** Use softer colors, rounded corners, and clear, non-technical language.
+- **Mobile First:** Prioritize bottom navigation and large touch targets for a native app feel.
+- **Simplicity for Non-Tech Users:** Replace technical terms like "Geolocalização" with "Sua localização" or "Onde você está".
+- **Visual Feedback:** Use clear "Time Card" style indicators for status (Entry/Exit).
+
+## Initial Strategy
+- Redesign the global color variables for a more welcoming feel.
+- Implement a bottom navigation bar for mobile.
+- Refactor the login and dashboard to use simpler language.
+- Performance optimization on location tracking and data fetching.
+
+## Learning & Patterns
+- (Pending)
+
+## Rejected Changes
+- (Pending)

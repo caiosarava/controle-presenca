@@ -229,21 +229,44 @@
 }
 
 .current-status {
-  text-align: center;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  border-radius: var(--radius-sm);
   background: var(--background);
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.status-indicator-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-secondary);
 }
 
 .current-status.status-entrada {
-  background: #dcfce7;
-  color: #166534;
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.current-status.status-entrada .status-indicator-dot {
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
 }
 
 .current-status.status-saida {
-  background: #fee2e2;
+  background: #fef2f2;
   color: #991b1b;
+  border-color: #fecaca;
+}
+
+.current-status.status-saida .status-indicator-dot {
+  background: #ef4444;
 }
 
 .menu-toggle {

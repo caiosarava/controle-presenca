@@ -14,7 +14,16 @@ export function calcularDistancia(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+let cachedPosition = null;
+let lastFetchTime = 0;
+const CACHE_DURATION = 5000; // 5 seconds cache
+
 export function obterLocalizacaoAtual(options = {}) {
+  const now = Date.now();
+  if (cachedPosition && (now - lastFetchTime < CACHE_DURATION)) {
+    return Promise.resolve(cachedPosition);
+  }
+
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
       reject(new Error('Geolocalização não é suportada pelo seu navegador'));
@@ -24,12 +33,14 @@ export function obterLocalizacaoAtual(options = {}) {
     const timeout = options.timeout || 10000;
 
     const success = (position) => {
-      resolve({
+      cachedPosition = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
         accuracy: position.coords.accuracy,
         timestamp: position.timestamp,
-      });
+      };
+      lastFetchTime = Date.now();
+      resolve(cachedPosition);
     };
 
     const error = (error) => {
