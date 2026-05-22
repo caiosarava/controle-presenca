@@ -33,7 +33,16 @@ export async function registrarPresenca(userId, localId, tipo, latitude, longitu
   }
 }
 
+let lastRegistryCache = {};
+
 export async function buscarUltimoRegistro(userId, tipo = null) {
+  const cacheKey = `${userId}-${tipo || 'any'}`;
+  const now = Date.now();
+
+  if (lastRegistryCache[cacheKey] && (now - lastRegistryCache[cacheKey].time < 10000)) {
+    return lastRegistryCache[cacheKey].data;
+  }
+
   try {
     let query = supabase
       .from('registros')
@@ -50,7 +59,9 @@ export async function buscarUltimoRegistro(userId, tipo = null) {
 
     if (error) throw error;
 
-    return data && data.length > 0 ? data[0] : null;
+    const result = data && data.length > 0 ? data[0] : null;
+    lastRegistryCache[cacheKey] = { data: result, time: now };
+    return result;
   } catch (error) {
     console.error('Erro ao buscar último registro:', error);
     return null;
