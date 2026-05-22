@@ -114,16 +114,19 @@ export async function checkAdminAuth() {
 }
 
 export function getLocalStorageUser() {
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem('user') || sessionStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 }
 
 export function setLocalStorageUser(user) {
-  localStorage.setItem('user', JSON.stringify(user));
+  const rememberMe = localStorage.getItem('rememberMe') !== 'false';
+  const storage = rememberMe ? localStorage : sessionStorage;
+  storage.setItem('user', JSON.stringify(user));
 }
 
 export function removeLocalStorageUser() {
   localStorage.removeItem('user');
+  sessionStorage.removeItem('user');
 }
 
 export async function onAuthChange(callback) {
