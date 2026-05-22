@@ -19,6 +19,9 @@ export async function registrarPresenca(userId, localId, tipo, latitude, longitu
 
     if (error) throw error;
 
+    // Invalidate cache
+    lastRegistryCache = {};
+
     if (tipo === 'saida') {
       const entradaRegistro = await buscarUltimoRegistro(userId, 'entrada');
       if (entradaRegistro) {
