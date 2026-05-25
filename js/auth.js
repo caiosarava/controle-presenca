@@ -120,8 +120,11 @@ export function getLocalStorageUser() {
 
 export function setLocalStorageUser(user) {
   const rememberMe = localStorage.getItem('rememberMe') !== 'false';
-  const storage = rememberMe ? localStorage : sessionStorage;
-  storage.setItem('user', JSON.stringify(user));
+  if (rememberMe) {
+    localStorage.setItem('user', JSON.stringify(user));
+  } else {
+    sessionStorage.setItem('user', JSON.stringify(user));
+  }
 }
 
 export function removeLocalStorageUser() {
