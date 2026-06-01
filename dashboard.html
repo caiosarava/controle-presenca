@@ -118,14 +118,46 @@
     import { obterLocalizacaoAtual, verificarSeDentroDoRaio, formatarDistancia } from './js/geo.js';
     import { buscarLocais } from './js/admin.js';
 
-    const currentUser = getLocalStorageUser();
+    let currentUser = getLocalStorageUser();
     
     if (!currentUser) {
       window.location.href = '/index.html';
     } else {
-      document.getElementById('userName').textContent = currentUser.profile?.nome || 'Usuário';
-      document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'U').charAt(0).toUpperCase();
-      document.getElementById('greeting').textContent = `Olá, ${currentUser.profile?.nome?.split(' ')[0] || 'Usuário'}!`;
+      // Update UI with cached data first
+      atualizarInterfaceUsuario(currentUser);
+
+      // Then fetch fresh profile from database to ensure authorized locations are up to date
+      refreshUserProfile();
+    }
+
+    function atualizarInterfaceUsuario(userData) {
+      if (!userData || !userData.profile) return;
+      document.getElementById('userName').textContent = userData.profile.nome || 'Usuário';
+      document.getElementById('userAvatar').textContent = (userData.profile.nome || 'U').charAt(0).toUpperCase();
+      document.getElementById('greeting').textContent = `Olá, ${userData.profile.nome.split(' ')[0] || 'Usuário'}!`;
+    }
+
+    async function refreshUserProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profile) {
+          currentUser.profile = profile;
+          setLocalStorageUser(currentUser);
+          atualizarInterfaceUsuario(currentUser);
+          // Reload locations with new profile
+          await carregarLocais();
+        }
+      } catch (error) {
+        console.error('Erro ao atualizar perfil:', error);
+      }
     }
 
     const menuToggle = document.getElementById('menuToggle');
@@ -287,13 +319,30 @@
     async function carregarUltimoRegistro() {
       try {
         const registro = await buscarUltimoRegistro(currentUser.user.id);
-        ultimoRegistro = registro;
 
+        // Verifica se o registro é de hoje
         if (registro) {
-          const status = registro.tipo === 'entrada' ? 'Você entrou' : 'Você saiu';
-          const dataFormatada = formatarDataHora(registro.data_hora);
+          const dataRegistro = new Date(registro.data_hora);
+          const hoje = new Date();
+          const eMesmoDia = dataRegistro.getDate() === hoje.getDate() &&
+                            dataRegistro.getMonth() === hoje.getMonth() &&
+                            dataRegistro.getFullYear() === hoje.getFullYear();
+
+          // Se for uma entrada de outro dia, ignoramos para permitir nova entrada hoje
+          if (registro.tipo === 'entrada' && !eMesmoDia) {
+            ultimoRegistro = null;
+          } else {
+            ultimoRegistro = registro;
+          }
+        } else {
+          ultimoRegistro = null;
+        }
+
+        if (ultimoRegistro) {
+          const status = ultimoRegistro.tipo === 'entrada' ? 'Você entrou' : 'Você saiu';
+          const dataFormatada = formatarDataHora(ultimoRegistro.data_hora);
           currentStatusText.textContent = `${status} às ${dataFormatada}`;
-          currentStatus.className = `current-status status-${registro.tipo}`;
+          currentStatus.className = `current-status status-${ultimoRegistro.tipo}`;
         } else {
           currentStatusText.textContent = 'Pronto para começar!';
           currentStatus.className = 'current-status';
