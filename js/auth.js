@@ -61,12 +61,14 @@ export async function signIn(email, password) {
 
 export async function signOut() {
   try {
-    const { error } = await supabase.auth.signOut();
     removeLocalStorageUser();
+    const { error } = await supabase.auth.signOut();
     if (error) throw error;
     return { error: null };
   } catch (error) {
     console.error('Erro ao fazer logout:', error);
+    // Even if Supabase sign out fails, we should clear local data
+    removeLocalStorageUser();
     return { error };
   }
 }

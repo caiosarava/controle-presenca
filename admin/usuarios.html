@@ -200,6 +200,17 @@
       limparFormulario();
       document.getElementById('modalTitle').textContent = 'Novo Usuário';
       senhaGrupo.classList.remove('hidden');
+
+      // Selecionar Praça XV por padrão
+      const selectLocais = document.getElementById('locaisAutorizados');
+      const pracaXVId = '6bf258c8-66c5-42eb-949e-e32712740a91';
+      for (let i = 0; i < selectLocais.options.length; i++) {
+        if (selectLocais.options[i].value === pracaXVId) {
+          selectLocais.options[i].selected = true;
+          break;
+        }
+      }
+
       modalUsuario.classList.add('show');
     });
     modalClose?.addEventListener('click', () => {
