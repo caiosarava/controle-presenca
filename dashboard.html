@@ -112,16 +112,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
-    import { supabase } from './js/supabase.js';
-    import { getLocalStorageUser, setLocalStorageUser, signOut } from './js/auth.js';
-    import { registrarPresenca, buscarUltimoRegistro, formatarDataHora } from './js/registro.js';
-    import { obterLocalizacaoAtual, verificarSeDentroDoRaio, formatarDistancia } from './js/geo.js';
-    import { buscarLocais } from './js/admin.js';
+    import { supabase } from '/js/supabase.js';
+    import { getLocalStorageUser, setLocalStorageUser, signOut } from '/js/auth.js';
+    import { registrarPresenca, buscarUltimoRegistro, formatarDataHora } from '/js/registro.js';
+    import { obterLocalizacaoAtual, verificarSeDentroDoRaio, formatarDistancia } from '/js/geo.js';
+    import { buscarLocais } from '/js/admin.js';
 
     let currentUser = getLocalStorageUser();
     
     if (!currentUser) {
-      window.location.href = '/index.html';
+      window.location.replace('/index.html?logout=true');
     } else {
       // Update UI with cached data first
       atualizarInterfaceUsuario(currentUser);
@@ -185,7 +185,7 @@
     const handleLogout = async (e) => {
       e.preventDefault();
       await signOut();
-      window.location.href = '/index.html';
+      window.location.replace('/index.html?logout=true');
     };
 
     logoutBtn?.addEventListener('click', handleLogout);

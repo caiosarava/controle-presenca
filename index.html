@@ -86,15 +86,18 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
-    import { signIn, setLocalStorageUser, getLocalStorageUser } from './js/auth.js';
+    import { signIn, setLocalStorageUser, getLocalStorageUser } from '/js/auth.js';
 
     const loginForm = document.getElementById('loginForm');
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     const emailInput = document.getElementById('email');
     // Check if user is already logged in
+    const urlParams = new URLSearchParams(window.location.search);
+    const isLogout = urlParams.get('logout') === 'true';
+
     const currentUser = getLocalStorageUser();
-    if (currentUser) {
+    if (currentUser && !isLogout) {
       if (currentUser.profile?.role === 'admin') {
         window.location.href = '/admin/index.html';
       } else {

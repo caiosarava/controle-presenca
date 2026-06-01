@@ -178,12 +178,12 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
-    import { getLocalStorageUser, signOut } from '../js/auth.js';
-    import { buscarLocais, criarLocal, atualizarLocal, deletarLocal } from '../js/admin.js';
-    import { obterLocalizacaoAtual } from '../js/geo.js';
+    import { getLocalStorageUser, signOut } from '/js/auth.js';
+    import { buscarLocais, criarLocal, atualizarLocal, deletarLocal } from '/js/admin.js';
+    import { obterLocalizacaoAtual } from '/js/geo.js';
     const currentUser = getLocalStorageUser();
     if (!currentUser || currentUser.profile?.role !== 'admin') {
-      window.location.href = '/index.html';
+      window.location.replace('/index.html?logout=true');
     }
     const btnNovoLocal = document.getElementById('btnNovoLocal');
     const modalLocal = document.getElementById('modalLocal');
@@ -213,7 +213,7 @@
     const handleLogout = async (e) => {
       e.preventDefault();
       await signOut();
-      window.location.href = '/index.html';
+      window.location.replace('/index.html?logout=true');
     };
     logoutBtn?.addEventListener('click', handleLogout);
     document.getElementById('logoutBtnBottom')?.addEventListener('click', handleLogout);
