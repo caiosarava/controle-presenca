@@ -60,13 +60,6 @@
             </div>
           </div>
 
-          <div class="form-group remember-me-wrapper">
-            <label class="checkbox-container">
-              <input type="checkbox" id="rememberMe" name="rememberMe" checked>
-              <span class="checkmark"></span>
-              Manter conectado
-            </label>
-          </div>
 
           <div id="loginError" class="login-error"></div>
 
@@ -93,22 +86,27 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
-    import { signIn, setLocalStorageUser } from './js/auth.js';
+    import { signIn, setLocalStorageUser, getLocalStorageUser } from './js/auth.js';
 
     const loginForm = document.getElementById('loginForm');
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     const emailInput = document.getElementById('email');
-    const rememberMeCheckbox = document.getElementById('rememberMe');
+    // Check if user is already logged in
+    const currentUser = getLocalStorageUser();
+    if (currentUser) {
+      if (currentUser.profile?.role === 'admin') {
+        window.location.href = '/admin/index.html';
+      } else {
+        window.location.href = '/dashboard.html';
+      }
+    }
 
-    // Pre-fill email and checkbox state if saved
+    // Pre-fill email if saved
     const savedEmail = localStorage.getItem('rememberedEmail');
-    const savedRememberMe = localStorage.getItem('rememberMe') !== 'false';
-
     if (savedEmail) {
       emailInput.value = savedEmail;
     }
-    rememberMeCheckbox.checked = savedRememberMe;
 
     togglePassword?.addEventListener('click', () => {
       const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
@@ -136,14 +134,8 @@
       loginBtnLoading.classList.remove('hidden');
       loginError.classList.remove('show');
 
-      // Save preferences before sign in
-      if (rememberMeCheckbox.checked) {
-        localStorage.setItem('rememberedEmail', email);
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('rememberedEmail');
-        localStorage.setItem('rememberMe', 'false');
-      }
+      // Save email for next time
+      localStorage.setItem('rememberedEmail', email);
 
   const result = await signIn(email, password);
 
