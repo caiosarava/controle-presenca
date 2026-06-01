@@ -73,6 +73,14 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label for="locaisAutorizados" class="label">Onde você vai bater o ponto?</label>
+            <select id="locaisAutorizados" class="input" multiple style="min-height: 100px;">
+              <option value="">Carregando locais...</option>
+            </select>
+            <p class="text-sm text-secondary mt-2">Dica: clique segurando o dedo ou a tecla Ctrl para escolher mais de um.</p>
+          </div>
+
           <div id="cadastroError" class="login-error"></div>
 
           <button type="submit" class="btn btn-primary btn-lg btn-block" id="cadastroBtn">
@@ -118,6 +126,31 @@
     setupToggle(togglePassword, passwordInput);
     setupToggle(toggleConfirmPassword, confirmPasswordInput);
 
+    const selectLocais = document.getElementById('locaisAutorizados');
+    const pracaXVId = '6bf258c8-66c5-42eb-949e-e32712740a91';
+
+    async function carregarLocais() {
+      try {
+        const { data: locais, error } = await supabase
+          .from('locais')
+          .select('id, nome')
+          .order('nome');
+
+        if (error) throw error;
+
+        if (locais) {
+          selectLocais.innerHTML = locais.map(local =>
+            `<option value="${local.id}" ${local.id === pracaXVId ? 'selected' : ''}>${local.nome}</option>`
+          ).join('');
+        }
+      } catch (error) {
+        console.error('Erro ao carregar locais:', error);
+        selectLocais.innerHTML = '<option value="">Erro ao carregar locais</option>';
+      }
+    }
+
+    carregarLocais();
+
     const cadastroBtn = document.getElementById('cadastroBtn');
     const cadastroBtnText = document.getElementById('cadastroBtnText');
     const cadastroBtnLoading = document.getElementById('cadastroBtnLoading');
@@ -130,6 +163,14 @@
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
+      const locaisSelecionados = Array.from(selectLocais.selectedOptions, option => option.value).filter(v => v !== "");
+
+      // Validar locais
+      if (locaisSelecionados.length === 0) {
+        cadastroError.textContent = 'Por favor, selecione pelo menos um local.';
+        cadastroError.classList.add('show');
+        return;
+      }
 
       // Validar senhas
       if (password !== confirmPassword) {
@@ -158,6 +199,7 @@
           options: {
             data: {
               nome: nome,
+              locais_autorizados: locaisSelecionados,
             },
           },
         });

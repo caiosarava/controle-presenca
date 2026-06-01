@@ -108,6 +108,26 @@ CREATE TRIGGER on_auth_user_created
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user();
 
+-- Trigger: Atualizar o handle_new_user para suportar locais_autorizados da metadata
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.users (id, email, nome, role, locais_autorizados)
+    VALUES (
+        NEW.id,
+        NEW.email,
+        COALESCE(NEW.raw_user_meta_data->>'nome', SPLIT_PART(NEW.email, '@', 1)),
+        COALESCE(NEW.raw_user_meta_data->>'role', 'normal'),
+        COALESCE(
+          (SELECT array_agg(id) FROM (SELECT jsonb_array_elements_text(NEW.raw_user_meta_data->'locais_autorizados')::uuid AS id) s),
+          '{}'::uuid[]
+        )
+    )
+    ON CONFLICT (id) DO NOTHING;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- ============================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================
