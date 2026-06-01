@@ -6,11 +6,9 @@
   <meta name="description" content="Gestão de Locais - Controle de Presença">
   <meta name="theme-color" content="#6366f1">
   <title>Locais - Controle de Presença</title>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/components.css">
@@ -23,7 +21,6 @@
         <img src="/assets/icon.svg" alt="Logo" style="width: 32px; height: 32px;">
         <h1>Admin</h1>
       </div>
-
       <nav class="admin-sidebar-nav">
         <a href="/admin/index.html">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +55,6 @@
         </a>
       </nav>
     </aside>
-
     <main class="admin-main">
       <header class="admin-header">
         <h2>Gerenciar Locais</h2>
@@ -69,7 +65,6 @@
           Novo Local
         </button>
       </header>
-
       <div class="data-table">
         <div class="data-table-container">
           <table>
@@ -94,7 +89,6 @@
           </table>
         </div>
       </div>
-
       <div id="emptyState" class="empty-state hidden">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -103,7 +97,6 @@
         <p>Clique em "Novo Local" para cadastrar</p>
       </div>
     </main>
-
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="/admin/index.html" class="bottom-nav-item">
@@ -138,7 +131,6 @@
       <span>Sair</span>
     </a>
   </nav>
-
     <div class="modal-overlay" id="modalLocal">
       <div class="modal">
         <div class="modal-header">
@@ -152,12 +144,10 @@
         <form id="formLocal">
           <div class="modal-body">
             <input type="hidden" id="localId">
-            
             <div class="form-group">
               <label for="nome" class="label">Nome do local</label>
               <input type="text" id="nome" class="input" required placeholder="Ex: Escritório Central">
             </div>
-
             <div class="form-group">
               <label for="latitude" class="label">Latitude (Onde fica?)</label>
               <input type="number" step="any" id="latitude" class="input" required placeholder="-23.5505">
@@ -169,12 +159,10 @@
                 Usar minha posição agora
               </button>
             </div>
-
             <div class="form-group">
               <label for="longitude" class="label">Longitude</label>
               <input type="number" step="any" id="longitude" class="input" required placeholder="-46.6333">
             </div>
-
             <div class="form-group">
               <label for="raio" class="label">Raio (metros)</label>
               <input type="number" id="raio" class="input" value="100" placeholder="100">
@@ -188,19 +176,15 @@
       </div>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
     import { getLocalStorageUser, signOut } from '../js/auth.js';
     import { buscarLocais, criarLocal, atualizarLocal, deletarLocal } from '../js/admin.js';
     import { obterLocalizacaoAtual } from '../js/geo.js';
-
     const currentUser = getLocalStorageUser();
-    
     if (!currentUser || currentUser.profile?.role !== 'admin') {
       window.location.href = '/index.html';
     }
-
     const btnNovoLocal = document.getElementById('btnNovoLocal');
     const modalLocal = document.getElementById('modalLocal');
     const modalClose = document.getElementById('modalClose');
@@ -210,37 +194,29 @@
     const emptyState = document.getElementById('emptyState');
     const logoutBtn = document.getElementById('logoutBtn');
     const btnMinhaLocal = document.getElementById('btnMinhaLocal');
-
     btnNovoLocal?.addEventListener('click', () => {
       limparFormulario();
       document.getElementById('modalTitle').textContent = 'Novo Local';
       modalLocal.classList.add('show');
     });
-
     modalClose?.addEventListener('click', () => {
       modalLocal.classList.remove('show');
     });
-
     modalCancelar?.addEventListener('click', () => {
       modalLocal.classList.remove('show');
     });
-
     modalLocal?.addEventListener('click', (e) => {
       if (e.target === modalLocal) {
         modalLocal.classList.remove('show');
       }
     });
-
     const handleLogout = async (e) => {
       e.preventDefault();
       await signOut();
-      localStorage.removeItem('user');
       window.location.href = '/index.html';
     };
-
     logoutBtn?.addEventListener('click', handleLogout);
     document.getElementById('logoutBtnBottom')?.addEventListener('click', handleLogout);
-
     btnMinhaLocal?.addEventListener('click', async () => {
       try {
         const pos = await obterLocalizacaoAtual();
@@ -250,25 +226,20 @@
         alert('Erro ao obter localização: ' + error.message);
       }
     });
-
     formLocal?.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const localId = document.getElementById('localId').value;
       const nome = document.getElementById('nome').value;
       const latitude = parseFloat(document.getElementById('latitude').value);
       const longitude = parseFloat(document.getElementById('longitude').value);
       const raio = parseInt(document.getElementById('raio').value) || 100;
-
       const localData = { nome, latitude, longitude, raio_metros: raio };
-
       let resultado;
       if (localId) {
         resultado = await atualizarLocal(localId, localData);
       } else {
         resultado = await criarLocal(localData);
       }
-
       if (resultado.error) {
         alert('Erro: ' + (resultado.error.message || 'Erro ao salvar local'));
       } else {
@@ -276,7 +247,6 @@
         carregarLocais();
       }
     });
-
     function limparFormulario() {
       document.getElementById('localId').value = '';
       document.getElementById('nome').value = '';
@@ -284,19 +254,15 @@
       document.getElementById('longitude').value = '';
       document.getElementById('raio').value = '100';
     }
-
     async function carregarLocais() {
       const { data, error } = await buscarLocais();
-
       if (error || !data || data.length === 0) {
         tabelaLocais.parentElement.classList.add('hidden');
         emptyState.classList.remove('hidden');
         return;
       }
-
       emptyState.classList.add('hidden');
       tabelaLocais.parentElement.classList.remove('hidden');
-
       tabelaLocais.innerHTML = data.map(local => `
         <tr>
           <td>${local.nome || '-'}</td>
@@ -318,11 +284,9 @@
         </tr>
       `).join('');
     }
-
     window.editarLocal = async (localId) => {
       const { data } = await buscarLocais();
       const local = data.find(l => l.id === localId);
-      
       if (local) {
         document.getElementById('modalTitle').textContent = 'Editar Local';
         document.getElementById('localId').value = local.id;
@@ -333,14 +297,12 @@
         modalLocal.classList.add('show');
       }
     };
-
     window.deletarLocalClick = async (localId) => {
       if (confirm('Tem certeza que deseja excluir este local?')) {
         await deletarLocal(localId);
         carregarLocais();
       }
     };
-
     carregarLocais();
   </script>
 </body>

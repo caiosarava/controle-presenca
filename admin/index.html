@@ -6,11 +6,9 @@
   <meta name="description" content="Admin Dashboard - Controle de Presença">
   <meta name="theme-color" content="#6366f1">
   <title>Admin Dashboard - Controle de Presença</title>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/components.css">
@@ -24,7 +22,6 @@
         <img src="/assets/icon.svg" alt="Logo" style="width: 32px; height: 32px;">
         <h1>Admin</h1>
       </div>
-
       <nav class="admin-sidebar-nav">
         <a href="/admin/index.html" class="active">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,7 +56,6 @@
         </a>
       </nav>
     </aside>
-
 <main class="admin-main">
 <header class="admin-header">
 <div class="header-left">
@@ -82,7 +78,6 @@
 <span class="user-name" id="userName">Admin</span>
 </div>
 </header>
-
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-card-header">
@@ -97,7 +92,6 @@
             </div>
           </div>
         </div>
-
         <div class="stat-card">
           <div class="stat-card-header">
             <div>
@@ -112,7 +106,6 @@
             </div>
           </div>
         </div>
-
         <div class="stat-card">
           <div class="stat-card-header">
             <div>
@@ -126,7 +119,6 @@
             </div>
           </div>
         </div>
-
         <div class="stat-card">
           <div class="stat-card-header">
             <div>
@@ -141,7 +133,6 @@
           </div>
         </div>
       </div>
-
       <div class="charts-grid">
         <div class="chart-card">
           <h3>Registros por Dia (Últimos 7 dias)</h3>
@@ -152,7 +143,6 @@
           <canvas id="chartDistribuicao"></canvas>
         </div>
       </div>
-
       <div class="data-table">
         <div class="data-table-header">
           <h3>Últimos Registros</h3>
@@ -182,7 +172,6 @@
       </div>
     </main>
   </div>
-
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="/admin/index.html" class="bottom-nav-item active">
@@ -217,53 +206,44 @@
       <span>Sair</span>
     </a>
   </nav>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module">
 import { getLocalStorageUser, signOut } from '../js/auth.js';
 import { buscarEstatisticas, buscarUltimosRegistros, buscarRegistrosPorPeriodo, buscarPresencaDia } from '../js/admin.js';
-
 const currentUser = getLocalStorageUser();
-
 if (!currentUser || currentUser.profile?.role !== 'admin') {
   window.location.href = '/index.html';
 } else {
   document.getElementById('userName').textContent = currentUser.profile?.nome || 'Admin';
   document.getElementById('userAvatar').textContent = (currentUser.profile?.nome || 'A').charAt(0).toUpperCase();
 }
-
 const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 const logoutBtn = document.getElementById('logoutBtn');
-
 // Toggle menu
 menuToggle?.addEventListener('click', () => {
   sidebar.classList.toggle('open');
   sidebarOverlay?.classList.toggle('show');
 });
-
 // Overlay click handler
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 sidebarOverlay?.addEventListener('click', () => {
   sidebar.classList.remove('open');
   sidebarOverlay.classList.remove('show');
 });
-
 // Close menu when clicking outside on mobile
 document.addEventListener('click', (e) => {
   if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
     const isClickInsideSidebar = sidebar.contains(e.target);
     const isClickOnToggle = menuToggle?.contains(e.target);
     const isClickOnOverlay = sidebarOverlay?.contains(e.target);
-    
     if (!isClickInsideSidebar && !isClickOnToggle && !isClickOnOverlay) {
       sidebar.classList.remove('open');
       sidebarOverlay?.classList.remove('show');
     }
   }
 });
-
 // Close menu when navigating
 const navLinks = sidebar.querySelectorAll('a');
 navLinks.forEach(link => {
@@ -274,25 +254,19 @@ navLinks.forEach(link => {
     }
   });
 });
-
 const handleLogout = async (e) => {
   e.preventDefault();
   await signOut();
-  localStorage.removeItem('user');
   window.location.href = '/index.html';
 };
-
 logoutBtn?.addEventListener('click', handleLogout);
 document.getElementById('logoutBtnBottom')?.addEventListener('click', handleLogout);
-
 let pollingInterval;
 let isRefreshing = false;
-
 async function carregarDashboard() {
   await carregarEstatisticas();
   await carregarGraficos();
   await carregarUltimosRegistros();
-  
   // Configurar polling de 1 minuto
   if (pollingInterval) {
     clearInterval(pollingInterval);
@@ -302,31 +276,25 @@ async function carregarDashboard() {
     await carregarUltimosRegistros();
   }, 60 * 1000); // 1 minuto
 }
-
 async function carregarEstatisticas() {
   const stats = await buscarEstatisticas();
-
   if (stats) {
     document.getElementById('totalUsuarios').textContent = stats.totalUsuarios || 0;
     document.getElementById('totalLocais').textContent = stats.totalLocais || 0;
     document.getElementById('registrosHoje').textContent = stats.registrosHoje || 0;
-
     // Buscar presença atual do banco (registros de entrada no dia)
     const presenca = await buscarPresencaDia();
     document.getElementById('presencaAtual').textContent = presenca;
   }
 }
-
 async function refreshAll() {
   if (isRefreshing) return;
   isRefreshing = true;
-  
   // Adicionar spinner
   const refreshIcon = document.getElementById('refreshIcon');
   if (refreshIcon) {
     refreshIcon.classList.add('spinning');
   }
-  
   try {
     await carregarEstatisticas();
     await carregarGraficos();
@@ -341,17 +309,13 @@ async function refreshAll() {
     isRefreshing = false;
   }
 }
-
 // Botão de atualizar
 document.getElementById('btnRefresh')?.addEventListener('click', refreshAll);
-
     async function carregarGraficos() {
       const dados = await buscarRegistrosPorPeriodo(7);
-      
       if (dados) {
         const dias = Object.keys(dados.porDia);
         const valores = Object.values(dados.porDia);
-
         new Chart(document.getElementById('chartRegistrosPorDia'), {
           type: 'bar',
           data: {
@@ -380,7 +344,6 @@ document.getElementById('btnRefresh')?.addEventListener('click', refreshAll);
             }
           }
         });
-
         new Chart(document.getElementById('chartDistribuicao'), {
           type: 'doughnut',
           data: {
@@ -402,16 +365,13 @@ document.getElementById('btnRefresh')?.addEventListener('click', refreshAll);
         });
       }
     }
-
     async function carregarUltimosRegistros() {
       const { data } = await buscarUltimosRegistros(5);
       const tbody = document.getElementById('ultimosRegistros');
-
       if (!data || data.length === 0) {
         tbody.innerHTML = '<tr><td colspan="4" class="text-center">Nenhum registro encontrado</td></tr>';
         return;
       }
-
       tbody.innerHTML = data.map(registro => `
         <tr>
           <td>${registro.users?.nome || '-'}</td>
@@ -421,25 +381,21 @@ document.getElementById('btnRefresh')?.addEventListener('click', refreshAll);
         </tr>
       `).join('');
     }
-
     function getTipoBadge(tipo) {
       const badgeClass = tipo === 'entrada' ? 'badge-success' : 'badge-danger';
       const badgeText = tipo === 'entrada' ? 'Entrada' : 'Saída';
       return `<span class="badge ${badgeClass}">${badgeText}</span>`;
     }
-
 function formatarDataHora(dataIso) {
   if (!dataIso) return '-';
   const data = new Date(dataIso);
   return data.toLocaleString('pt-BR');
 }
-
 window.addEventListener('beforeunload', () => {
   if (pollingInterval) {
     clearInterval(pollingInterval);
   }
 });
-
 carregarDashboard();
   </script>
 </body>

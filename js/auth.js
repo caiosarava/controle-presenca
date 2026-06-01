@@ -62,6 +62,7 @@ export async function signIn(email, password) {
 export async function signOut() {
   try {
     const { error } = await supabase.auth.signOut();
+    removeLocalStorageUser();
     if (error) throw error;
     return { error: null };
   } catch (error) {
@@ -114,22 +115,16 @@ export async function checkAdminAuth() {
 }
 
 export function getLocalStorageUser() {
-  const user = localStorage.getItem('user') || sessionStorage.getItem('user');
+  const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 }
 
 export function setLocalStorageUser(user) {
-  const rememberMe = localStorage.getItem('rememberMe') !== 'false';
-  if (rememberMe) {
-    localStorage.setItem('user', JSON.stringify(user));
-  } else {
-    sessionStorage.setItem('user', JSON.stringify(user));
-  }
+  localStorage.setItem('user', JSON.stringify(user));
 }
 
 export function removeLocalStorageUser() {
   localStorage.removeItem('user');
-  sessionStorage.removeItem('user');
 }
 
 export async function onAuthChange(callback) {

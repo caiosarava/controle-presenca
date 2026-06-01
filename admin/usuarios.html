@@ -6,11 +6,9 @@
   <meta name="description" content="Gestão de Usuários - Controle de Presença">
   <meta name="theme-color" content="#6366f1">
   <title>Usuários - Controle de Presença</title>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/components.css">
@@ -23,7 +21,6 @@
         <img src="/assets/icon.svg" alt="Logo" style="width: 32px; height: 32px;">
         <h1>Admin</h1>
       </div>
-
       <nav class="admin-sidebar-nav">
         <a href="/admin/index.html">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +55,6 @@
         </a>
       </nav>
     </aside>
-
     <main class="admin-main">
       <header class="admin-header">
         <h2>Gerenciar Usuários</h2>
@@ -69,7 +65,6 @@
           Novo Usuário
         </button>
       </header>
-
       <div class="data-table">
         <div class="data-table-container">
           <table>
@@ -94,7 +89,6 @@
           </table>
         </div>
       </div>
-
       <div id="emptyState" class="empty-state hidden">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -102,7 +96,6 @@
         <h4>Nenhum usuário encontrado</h4>
       </div>
     </main>
-
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <a href="/admin/index.html" class="bottom-nav-item">
@@ -137,7 +130,6 @@
       <span>Sair</span>
     </a>
   </nav>
-
     <div class="modal-overlay" id="modalUsuario">
       <div class="modal">
         <div class="modal-header">
@@ -151,22 +143,18 @@
         <form id="formUsuario">
           <div class="modal-body">
             <input type="hidden" id="usuarioId">
-            
             <div class="form-group">
               <label for="nome" class="label">Nome Completo</label>
               <input type="text" id="nome" class="input" required placeholder="Ex: João Silva">
             </div>
-
             <div class="form-group">
               <label for="email" class="label">E-mail</label>
               <input type="email" id="email" class="input" required placeholder="exemplo@email.com">
             </div>
-
             <div class="form-group" id="senhaGrupo">
               <label for="senha" class="label">Senha</label>
               <input type="password" id="senha" class="input" placeholder="Mínimo 6 caracteres">
             </div>
-
             <div class="form-group">
               <label for="role" class="label">Perfil</label>
               <select id="role" class="input">
@@ -174,7 +162,6 @@
                 <option value="admin">Administrador</option>
               </select>
             </div>
-
             <div class="form-group">
               <label for="locaisAutorizados" class="label">Locais onde pode bater o ponto</label>
               <select id="locaisAutorizados" class="input" multiple style="min-height: 120px;">
@@ -190,19 +177,15 @@
       </div>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module">
     import { getLocalStorageUser, signOut } from '../js/auth.js';
     import { buscarLocais } from '../js/admin.js';
     import { supabase } from '../js/supabase.js';
-
     const currentUser = getLocalStorageUser();
-    
     if (!currentUser || currentUser.profile?.role !== 'admin') {
       window.location.href = '/index.html';
     }
-
     const btnNovoUsuario = document.getElementById('btnNovoUsuario');
     const modalUsuario = document.getElementById('modalUsuario');
     const modalClose = document.getElementById('modalClose');
@@ -212,62 +195,49 @@
     const emptyState = document.getElementById('emptyState');
     const logoutBtn = document.getElementById('logoutBtn');
     const senhaGrupo = document.getElementById('senhaGrupo');
-
     let todosLocais = [];
-
     btnNovoUsuario?.addEventListener('click', () => {
       limparFormulario();
       document.getElementById('modalTitle').textContent = 'Novo Usuário';
       senhaGrupo.classList.remove('hidden');
       modalUsuario.classList.add('show');
     });
-
     modalClose?.addEventListener('click', () => {
       modalUsuario.classList.remove('show');
     });
-
     modalCancelar?.addEventListener('click', () => {
       modalUsuario.classList.remove('show');
     });
-
     modalUsuario?.addEventListener('click', (e) => {
       if (e.target === modalUsuario) {
         modalUsuario.classList.remove('show');
       }
     });
-
     const handleLogout = async (e) => {
       e.preventDefault();
       await signOut();
-      localStorage.removeItem('user');
       window.location.href = '/index.html';
     };
-
     logoutBtn?.addEventListener('click', handleLogout);
     document.getElementById('logoutBtnBottom')?.addEventListener('click', handleLogout);
-
     formUsuario?.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const usuarioId = document.getElementById('usuarioId').value;
       const nome = document.getElementById('nome').value;
       const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
       const role = document.getElementById('role').value;
       const locaisSelecionados = Array.from(document.getElementById('locaisAutorizados').selectedOptions, option => option.value);
-
       if (!usuarioId && !senha) {
         alert('Senha é obrigatória para novos usuários');
         return;
       }
-
       const userData = {
         nome,
         email,
         role,
         locais_autorizados: locaisSelecionados,
       };
-
       let resultado;
       if (usuarioId) {
         resultado = await supabase
@@ -280,23 +250,18 @@
           password: senha,
           email_confirm: true,
         });
-
         if (authError) {
           alert('Erro: ' + authError.message);
           return;
         }
-
         userData.id = authData.user.id;
         const { error } = await supabase.from('users').insert([userData]);
-        
         if (error) {
           alert('Erro: ' + error.message);
           return;
         }
-        
         resultado = { data: userData, error: null };
       }
-
       if (resultado.error) {
         alert('Erro: ' + (resultado.error.message || 'Erro ao salvar usuário'));
       } else {
@@ -304,7 +269,6 @@
         carregarUsuarios();
       }
     });
-
     function limparFormulario() {
       document.getElementById('usuarioId').value = '';
       document.getElementById('nome').value = '';
@@ -313,43 +277,34 @@
       document.getElementById('role').value = 'normal';
       document.getElementById('locaisAutorizados').value = [];
     }
-
 function getRoleBadge(role) {
   const badgeClass = role === 'admin' ? 'badge-primary' : 'badge-secondary';
   const badgeText = role === 'admin' ? 'Admin' : 'Usuário';
   return `<span class="badge ${badgeClass}">${badgeText}</span>`;
 }
-
 async function carregarUsuarios() {
   const { data: locais } = await buscarLocais();
   todosLocais = locais || [];
-
   const selectLocais = document.getElementById('locaisAutorizados');
   selectLocais.innerHTML = locais.map(local => `<option value="${local.id}">${local.nome}</option>`).join('');
-
   // Buscar todos os usuários da tabela users
   const { data: todosUsuarios, error } = await supabase
     .from('users')
     .select('*')
     .order('created_at', { ascending: false });
-
   if (error) {
     console.error('Erro ao buscar usuários:', error);
   }
-
   if (!todosUsuarios || todosUsuarios.length === 0) {
     tabelaUsuarios.parentElement.classList.add('hidden');
     emptyState.classList.remove('hidden');
     return;
   }
-
   emptyState.classList.add('hidden');
   tabelaUsuarios.parentElement.classList.remove('hidden');
-
   tabelaUsuarios.innerHTML = todosUsuarios.map(usuario => {
     const locaisUsuario = locais.filter(l => usuario.locais_autorizados?.includes(l.id));
     const locaisNomes = locaisUsuario.map(l => l.nome).join(', ') || 'Nenhum';
-
     return `
     <tr>
       <td>${usuario.nome || '-'}</td>
@@ -366,14 +321,12 @@ async function carregarUsuarios() {
     </tr>
     `}).join('');
 }
-
     window.editarUsuario = async (usuarioId) => {
       const { data: usuario } = await supabase
         .from('users')
         .select('*')
         .eq('id', usuarioId)
         .single();
-
       if (usuario) {
         document.getElementById('modalTitle').textContent = 'Editar Usuário';
         document.getElementById('usuarioId').value = usuario.id;
@@ -385,7 +338,6 @@ async function carregarUsuarios() {
         modalUsuario.classList.add('show');
       }
     };
-
     carregarUsuarios();
   </script>
 </body>

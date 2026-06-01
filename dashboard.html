@@ -153,7 +153,6 @@
     const handleLogout = async (e) => {
       e.preventDefault();
       await signOut();
-      localStorage.removeItem('user');
       window.location.href = '/index.html';
     };
 
