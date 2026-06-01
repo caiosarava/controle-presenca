@@ -126,7 +126,23 @@ export function setLocalStorageUser(user) {
 }
 
 export function removeLocalStorageUser() {
+  console.log('Limpando dados de sessão local...');
   localStorage.removeItem('user');
+  sessionStorage.removeItem('user');
+
+  // Clear Supabase specific keys using a safe iteration
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.includes('supabase.auth.token') || key.includes('sb-'))) {
+      keysToRemove.push(key);
+    }
+  }
+
+  keysToRemove.forEach(key => {
+    console.log('Removendo chave:', key);
+    localStorage.removeItem(key);
+  });
 }
 
 export async function onAuthChange(callback) {
