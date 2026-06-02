@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/css/admin.css">
   <link rel="stylesheet" href="/css/components.css">
 <link rel="stylesheet" href="/css/bottom-nav.css">
+<link rel="stylesheet" href="/css/pwa.css">
 </head>
 <body>
   <div class="admin-layout">
@@ -177,6 +178,28 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- PWA Components -->
+  <div id="install-pwa-banner" class="install-banner hidden">
+    <div class="install-banner-content">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+      </svg>
+      <span>Instale nosso app para uma experiência completa</span>
+      <div class="install-banner-actions">
+        <button id="btn-instalar-pwa" class="btn-install">Instalar</button>
+        <button id="btn-fechar-pwa" class="btn-secondary">Depois</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="connection-status" class="connection-status online">
+    <span class="status-indicator"></span>
+    <span class="status-text">Online</span>
+  </div>
+
+  <script type="module" src="/js/pwa.js"></script>
+
   <script type="module">
     import { getLocalStorageUser, signOut } from '/js/auth.js';
     import { buscarLocais, criarLocal, atualizarLocal, deletarLocal } from '/js/admin.js';

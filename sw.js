@@ -1,4 +1,4 @@
-const CACHE_NAME = 'controle-presenca-v2';
+const CACHE_NAME = 'controle-presenca-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -40,7 +40,6 @@ self.addEventListener('install', (event) => {
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
-  self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
@@ -213,4 +212,10 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     clients.openWindow(event.notification.data.url || '/dashboard.html')
   );
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

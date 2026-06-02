@@ -5,8 +5,8 @@
 
 const PWAConfig = {
   appName: 'Controle de Presença',
-  version: '1.0.0',
-  cacheName: 'controle-presenca-v1',
+  version: '1.1.0',
+  cacheName: 'controle-presenca-v3',
   assetsToCache: [
     '/',
     '/index.html',
@@ -19,12 +19,14 @@ const PWAConfig = {
     '/admin/historico.html',
     '/css/global.css',
     '/css/login.css',
+    '/css/dashboard.css',
     '/css/admin.css',
     '/css/components.css',
     '/js/config.js',
     '/js/supabase.js',
     '/js/auth.js',
     '/js/geo.js',
+    '/js/pwa.js',
     '/js/registro.js',
     '/js/admin.js',
     '/js/export.js',
@@ -88,10 +90,15 @@ async function registerServiceWorker() {
       newWorker.addEventListener('statechange', (event) => {
         if (event.target.state === 'installed' && navigator.serviceWorker.controller) {
           // Novo SW instalado, aguardar atualização
-          showUpdatePrompt();
+          showUpdateDialog(registration);
         }
       });
     });
+
+    // Se já houver um worker esperando (ex: aba aberta há muito tempo)
+    if (registration.waiting) {
+      showUpdateDialog(registration);
+    }
     
     return registration;
   } catch (error) {
@@ -300,20 +307,47 @@ function showOfflineNotification() {
 }
 
 /**
- * Mostra prompt de atualização
+ * Mostra diálogo de atualização (Modal)
  */
-function showUpdatePrompt() {
-  const updateBanner = document.getElementById('update-pwa-banner');
+function showUpdateDialog(registration) {
+  // Verificar se já existe o diálogo
+  let updateModal = document.getElementById('update-pwa-modal');
   
-  if (updateBanner) {
-    updateBanner.classList.remove('hidden');
+  if (!updateModal) {
+    updateModal = document.createElement('div');
+    updateModal.id = 'update-pwa-modal';
+    updateModal.className = 'modal-overlay show';
+    updateModal.innerHTML = `
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Atualização Disponível</h3>
+        </div>
+        <div class="modal-body">
+          <p>Uma nova versão do aplicativo está disponível com melhorias e correções.</p>
+          <p>Deseja atualizar agora?</p>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-pwa-refresh" class="btn btn-primary btn-block">Atualizar Agora</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(updateModal);
     
-    const btnAtualizar = document.getElementById('btn-atualizar-pwa');
-    if (btnAtualizar) {
-      btnAtualizar.addEventListener('click', () => {
-        if (navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-          window.location.reload();
+    const btnRefresh = document.getElementById('btn-pwa-refresh');
+    if (btnRefresh) {
+      btnRefresh.addEventListener('click', () => {
+        if (registration.waiting) {
+          // Enviar mensagem para o SW
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+
+          // Recarregar a página quando o novo worker assumir o controle
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
         }
       });
     }
